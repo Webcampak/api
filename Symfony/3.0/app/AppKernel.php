@@ -36,7 +36,8 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
-        return '/home/webcampak/webcampak/resources/cache/symfony/'.$this->environment.'/cache';
+        //return '/home/webcampak/webcampak/resources/cache/symfony/'.$this->environment.'/cache';
+        return '../../../../resources/cache/symfony/'.$this->environment.'/cache';
     }
     
     public function getLogDir()
@@ -46,6 +47,6 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load('/home/webcampak/webcampak/etc/symfony/config_'.$this->getEnvironment().'.yml');
+        $loader->load('../../../../etc/symfony/config_'.$this->getEnvironment().'.yml');
     }
 }
