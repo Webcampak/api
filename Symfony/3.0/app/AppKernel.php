@@ -47,6 +47,6 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load('../../../../etc/symfony/config_'.$this->getEnvironment().'.yml');
+        $loader->load('/home/webcampak/webcampak/config/config_'.$this->getEnvironment().'.yml');
     }
 }
