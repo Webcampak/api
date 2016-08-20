@@ -36,8 +36,8 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
-        //return '/home/webcampak/webcampak/resources/cache/symfony/'.$this->environment.'/cache';
-        return '../../../../resources/cache/symfony/'.$this->environment.'/cache';
+        return '/home/webcampak/webcampak/resources/cache/symfony/'.$this->environment.'/cache';
+        //return '../../../../resources/cache/symfony/'.$this->environment.'/cache';
     }
     
     public function getLogDir()
