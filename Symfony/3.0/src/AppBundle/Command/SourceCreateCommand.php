@@ -300,7 +300,8 @@ class SourceCreateCommand extends ContainerAwareCommand
         $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
         $wpakBinDirectory = $this->getContainer()->getParameter('dir_bin');
 
-        self::runSystemProcess($output, 'SourceCreateCommand.php\updateFtpAccounts() - ', "sudo python " . $wpakBinDirectory . "wpak-createlocalftpaccounts.py -g " . $wpakConfigDirectory . "config-general.cfg");
+//        self::runSystemProcess($output, 'SourceCreateCommand.php\updateFtpAccounts() - ', "sudo python " . $wpakBinDirectory . "wpak-createlocalftpaccounts.py -g " . $wpakConfigDirectory . "config-general.cfg");
+        self::runSystemProcess($output, 'SourceCreateCommand.php\updateFtpAccounts() - ', "sudo /usr/local/bin/webcampak system ftp");
     }
 
     function updateCron(OutputInterface $output) {
@@ -308,7 +309,8 @@ class SourceCreateCommand extends ContainerAwareCommand
         $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
         $wpakBinDirectory = $this->getContainer()->getParameter('dir_bin');
 
-        self::runSystemProcess($output, 'SourceCreateCommand.php\updateCron() - ', "python " . $wpakBinDirectory . "wpak-cronupdatefile.py -g " . $wpakConfigDirectory . "config-general.cfg");
+//        self::runSystemProcess($output, 'SourceCreateCommand.php\updateCron() - ', "python " . $wpakBinDirectory . "wpak-cronupdatefile.py -g " . $wpakConfigDirectory . "config-general.cfg");
+        self::runSystemProcess($output, 'SourceCreateCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
     }
 
     function runSystemProcess(OutputInterface $output, $message, $command) {

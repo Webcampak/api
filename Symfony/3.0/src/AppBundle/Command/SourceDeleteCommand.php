@@ -56,7 +56,10 @@ class SourceDeleteCommand extends ContainerAwareCommand
         self::moveSourceConfiguration($output, $sourceId, $targetDirectory);
 
         // Update Crontab
-        self::updateCron($output);        
+        self::updateCron($output);
+        // Configure VSFTPD
+        self::updateFtpAccounts($output);
+
         
         return 0;
     }
@@ -100,13 +103,15 @@ class SourceDeleteCommand extends ContainerAwareCommand
     }
 
     function updateCron(OutputInterface $output) {
-        self::log($output, 'info', 'SourceCronCommand.php\updateCron() - Update crontab for all sources');
-        $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
-        $wpakBinDirectory = $this->getContainer()->getParameter('dir_bin');
+        self::log($output, 'info', 'SourceDeleteCommand.php\updateCron() - Update crontab for all sources');
+        self::runSystemProcess($output, 'SourceDeleteCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
+    }
 
-        self::runSystemProcess($output, 'SourceCreateCommand.php\updateCron() - ', "python " . $wpakBinDirectory . "wpak-cronupdatefile.py -g " . $wpakConfigDirectory . "config-general.cfg");
-    }    
-    
+    function updateFtpAccounts(OutputInterface $output) {
+        self::log($output, 'info', 'SourceDeleteCommand.php\updateFtpAccounts() - Update FTP accounts');
+        self::runSystemProcess($output, 'SourceDeleteCommand.php\updateFtpAccounts() - ', "sudo /usr/local/bin/webcampak system ftp");
+    }
+
     function runSystemProcess(OutputInterface $output, $message, $command) {
         self::log($output, 'info', $message . 'Running command: ' . $command);
         $createConfiguration = new Process($command);

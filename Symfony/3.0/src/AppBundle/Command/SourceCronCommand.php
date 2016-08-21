@@ -49,7 +49,8 @@ class SourceCronCommand extends ContainerAwareCommand
         $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
         $wpakBinDirectory = $this->getContainer()->getParameter('dir_bin');
 
-        self::runSystemProcess($output, 'SourceCronCommand.php\updateCron() - ', "python " . $wpakBinDirectory . "wpak-cronupdatefile.py -g " . $wpakConfigDirectory . "config-general.cfg");
+//        self::runSystemProcess($output, 'SourceCronCommand.php\updateCron() - ', "python " . $wpakBinDirectory . "wpak-cronupdatefile.py -g " . $wpakConfigDirectory . "config-general.cfg");
+        self::runSystemProcess($output, 'SourceCronCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
     }
 
     function runSystemProcess(OutputInterface $output, $message, $command) {

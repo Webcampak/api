@@ -167,5 +167,31 @@ class SourceMoveCommand extends ContainerAwareCommand
         return false;
     }
 
+    function updateCron(OutputInterface $output) {
+        self::log($output, 'info', 'SourceMoveCommand.php\updateCron() - Update crontab for all sources');
+        self::runSystemProcess($output, 'SourceMoveCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
+    }
+
+    function updateFtpAccounts(OutputInterface $output) {
+        self::log($output, 'info', 'SourceMoveCommand.php\updateFtpAccounts() - Update FTP accounts');
+        self::runSystemProcess($output, 'SourceMoveCommand.php\updateFtpAccounts() - ', "sudo /usr/local/bin/webcampak system ftp");
+    }
+
+    function runSystemProcess(OutputInterface $output, $message, $command) {
+        self::log($output, 'info', $message . 'Running command: ' . $command);
+        $createConfiguration = new Process($command);
+        $createConfiguration->run();
+        $processOutputLines = explode("\n", $createConfiguration->getOutput());
+        foreach($processOutputLines as $processLine) {
+            self::log($output, 'info', $message . 'Python Subprocess: ' . $processLine);
+            return true;
+        }
+        if (!$createConfiguration->isSuccessful()) {
+            self::log($output, 'error', $message . 'Unable to perform action');
+            return false;
+        }
+    }
+
+
 }
 
