@@ -21,10 +21,10 @@ if ($app->getEnvironment() == 'dev') {
     <script>var $j = jQuery.noConflict();</script>
 
     <?php /* Loading JED related components (translation) */ ?>
-    <script>var json_locale_data = {"": {"Content-Type":" text/plain; charset=UTF-8"},"Empty":[null,"Empty"]};</script>
+    <script>var jsonLocaleData = {"": {"Content-Type":" text/plain; charset=UTF-8"},"Empty":[null,"Empty"]};</script>
     <script type="text/javascript" src="../../../resources/lib/js/jed/jed.js"></script>
     <script type="text/javascript" src="../locale/<?php echo $language; ?>/LC_MESSAGES/webcampak.js"></script>
-    <script>var i18n = new Jed({locale_data : {"messages" : json_locale_data},"domain" : "messages"});</script>
+    <script>var i18n = new Jed({locale_data : {"messages" : jsonLocaleData},"domain" : "messages"});</script>
 
     <?php /* Loading DateFormat library */ ?>
     <script type="text/javascript" src="../resources/lib/js/dateformat/date.format.js"></script>
