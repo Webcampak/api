@@ -192,13 +192,15 @@ class PicturesDirectoryService
         // takes two dates formatted as YYYYMMDD and creates an inclusive array of the dates between the from and to dates.
         // Taken from: http://stackoverflow.com/questions/4312439/php-return-all-dates-between-two-dates-in-an-array
         $dateRange=array();
-        $iDateFrom=mktime(1,0,0,substr($startDate,4,2),substr($startDate,6,2),substr($startDate,0,4));
-        $iDateTo=mktime(1,0,0,substr($endDate,4,2),substr($endDate,6,2),substr($endDate,0,4));
-        if ($iDateTo>=$iDateFrom) {
-            array_push($dateRange,date('Ymd',$iDateFrom)); // first entry
-            while ($iDateFrom<$iDateTo) {
-                $iDateFrom+=86400; // add 24 hours
-                array_push($dateRange,date('Ymd',$iDateFrom));
+        if (intval($startDate) > 0 && intval($endDate) > 0) {
+            $iDateFrom = mktime(1, 0, 0, substr($startDate, 4, 2), substr($startDate, 6, 2), substr($startDate, 0, 4));
+            $iDateTo = mktime(1, 0, 0, substr($endDate, 4, 2), substr($endDate, 6, 2), substr($endDate, 0, 4));
+            if ($iDateTo >= $iDateFrom) {
+                array_push($dateRange, date('Ymd', $iDateFrom)); // first entry
+                while ($iDateFrom < $iDateTo) {
+                    $iDateFrom += 86400; // add 24 hours
+                    array_push($dateRange, date('Ymd', $iDateFrom));
+                }
             }
         }
         return $dateRange;
