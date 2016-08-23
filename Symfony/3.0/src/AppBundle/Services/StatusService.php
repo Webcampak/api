@@ -144,7 +144,7 @@ class StatusService
             
             $userSources[$idx]['disk']['Used'] = $this->sourcesService->getSourceDirectorySize($sourceConfig['SOURCEID']);
             if (intval($sourceConfig['QUOTA']) === 0) {
-                $userSources[$idx]['disk']['Total'] = disk_total_space($this->kernelRootDir)
+                $userSources[$idx]['disk']['Total'] = disk_total_space($this->kernelRootDir);
             } else {
                 $userSources[$idx]['disk']['Total'] = intval($sourceConfig['QUOTA']);
             }
