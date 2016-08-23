@@ -1,18 +1,93 @@
+<!DOCTYPE html>
 <html>
-   <head>
-      <title>Webcampak Index page</title>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width">
-   </head>
-   <body>
-      <div>
-         Webcampak Desktop Dev: <a href="/app_dev.php/desktop">/app_dev.php/desktop</a><br />
-         Webcampak Desktop Test <a href="/app_test.php/desktop">/app_test.php/desktop</a><br />
-         Webcampak Desktop Prod: <a href="/app.php/desktop">/app.php/desktop</a><br />
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <title id="page-title">Webcampak Interface</title>
+
+   <style type="text/css">
+      html {
+         background: url(/resources/images/desktop.jpg) no-repeat center center fixed;
+         -webkit-background-size: cover;
+         -moz-background-size: cover;
+         -o-background-size: cover;
+         background-size: cover;
+      }
+      #buttonbox {
+         margin: 10px;
+         padding: 10px;
+         -webkit-border-radius: 4px;
+         color: #314E64;
+         background: #f8f8f8;
+         width: 230px;
+      }
+      #warningbox {
+         margin: 10px;
+         padding: 10px;
+         -webkit-border-radius: 4px;
+         color: #f8f8f8;
+         background: #d50000;
+         width: 750px;
+      }
+      #compatibility {
+         margin: 10px;
+         padding: 10px;
+         -webkit-border-radius: 4px;
+         color: #314E64;
+         width: 230px;
+      }
+      #information {
+         margin: 10px;
+         padding: 10px;
+         -webkit-border-radius: 4px;
+         color: #314E64;
+         background: #f8f8f8;
+         width: 600px;
+      }
+   </style>
+
+</head>
+
+<body>
+<div>
+   <table width="100%" border="0" align="center">
+      <tr valign="top"><td colspan="2" align="center">
+         <a href="http://www.webcampak.com"><img src="/resources/images/wpaklogo500x85.png" border="0" /></a><br /><br />
+      </td></tr>
+      <!--[if lt IE 9]>
+      <tr valign="top"><td colspan="3" align="center">
+         <div id="warningbox">
+            <b>Attention ! </b> <br />
+            Votre version d'Internet Explorer ne vous permet pas d'utiliser l'application Webcampak dans des conditions optimales. <br />
+            Mettez à jour votre navigateur (<a href="http://www.microsoft.com/windows/internet-explorer/">Microsoft.com</a>) ou installez un navigateur compatible.
+            <br /><br />
+            <b>Warning ! </b> <br />
+            Your version of Internet Explorer is too old for Webcampak software. <br />
+            Please update your browser (<a href="http://www.microsoft.com/windows/internet-explorer/">Microsoft.com</a>) or install a compliant browser (see below).
+         </div>
+      </td></tr>
+
+      <![endif]-->
+      <tr valign="top">
+         <td align="center">
+            <div id="buttonbox"><a href="/app.php/desktop"><img src="/resources/images/desktop92x92.png" border="0" /><br />Web</a></div>
+         </td>
+         <td align="center">
+            <div id="buttonbox"><a href="/dashboard.php/dashboard"><img src="/resources/images/pda92x92.png" border="0" /><br />Mobile</a></div>
+         </td>
          <br /><br />
-         Webcampak Dashboard Dev: <a href="/dashboard_dev.php/dashboard">/dashboard_dev.php/dashboard</a><br />
-         Webcampak Dashboard Test <a href="/dashboard_test.php/dashboard">/dashboard_test.php/dashboard</a><br />
-         Webcampak Dashboard Prod: <a href="/dashboard.php/dashboard">/dashboard.php/dashboard</a><br />         
-      </div>
-   </body>
-</html>
+      </tr>
+      <tr valign="top"><td colspan="2" align="center">
+         <div id="information">
+            <table>
+               <tr>
+                  <td><img src="/images/information.png" alt="information" /></td>
+                  <td>This server has recently been updated to Webcampak 3.0 . If you notice any issues or any bugs do not hesitate to let us know at support@webcampak.com.
+                     <br /><br />
+                     Ce serveur a été mis à jour vers Webcampak 3.0, n'hésitez pas à nous contacter (support@webcampak.com) si vous constatez des difficultés ou bugs.
+                  </td>
+               </tr>
+            </table>
+         </div>
+      </td></tr>
+   </table>
+</div>
