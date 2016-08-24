@@ -24,7 +24,7 @@ class SystemController extends Controller {
 
     public function systemRebootAction() {
         $logger = $this->get('logger');
-        $logger->info('AppBundle\Controller\PhpinfoController.php - Starting systemRebootAction()');
+        $logger->info('AppBundle\Controller\SystemController.php - Starting systemRebootAction()');
 
         $tokenStorage = $this->container->get('security.token_storage');
         $authorizationChecker = $this->container->get('security.authorization_checker');        
@@ -33,7 +33,7 @@ class SystemController extends Controller {
             $userService = $this->get('app.svc.user');
             $userPermissions = $userService->getUserPermissions($userEntity);
             if (in_array('SOURCES_CONFIGURATION_EXPERT', $userPermissions)) {
-                $createConfiguration = new Process('echo test > /tmp/abcde');
+                $createConfiguration = new Process('reboot');
                 $createConfiguration->run();
                 $results = array("success" => true, "message" => "Server will reboot soon");
             } else {
