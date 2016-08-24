@@ -21,10 +21,10 @@ class SystemLogsService
     public function getLogFile($receivedSourceid = null, $logtype) {
         $this->logger->info('AppBundle\Services\SystemLogsService\getLogFile() - Source: ' . $receivedSourceid .  ' - Log Type: ' . $logtype);
         if (intval($receivedSourceid) > 0) {
-            if ($logtype == 'capture')              {$logfile = 'capture-' . $receivedSourceid . '.log';}
-            else if ($logtype == 'customvideos')    {$logfile = 'cronlog-' . $receivedSourceid . '-customvid';}
-            else if ($logtype == 'videos')          {$logfile = 'cronlog-' . $receivedSourceid . '-dailyvid';}
-            else if ($logtype == 'posprod')         {$logfile = 'cronlog-' . $receivedSourceid . '-post';}
+            if ($logtype == 'capture')              {$logfile = 'source' . $receivedSourceid . '/capture.log';}
+            else if ($logtype == 'customvideos')    {$logfile = 'source' . $receivedSourceid . '/video-videocustom.log';}
+            else if ($logtype == 'videos')          {$logfile = 'source' . $receivedSourceid . '/video-video.log';}
+            else if ($logtype == 'posprod')         {$logfile = 'source' . $receivedSourceid . '/video-videopost.log';}
 
             /*
             capture-1.log
