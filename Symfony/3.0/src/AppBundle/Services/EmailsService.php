@@ -131,7 +131,7 @@ class EmailsService
             $fs->dumpFile($this->dirEmails . '/queued/' . $currentDate->format("Y-m-d_His_u") . '.json', json_encode($newEmail, JSON_FORCE_OBJECT));
             $results = array("success" => true, "message" => "Email queued");
         } else {
-            $results = array("success" => false, "message" => "Your email address is missing in the system, unable to send email");
+            $results = array("success" => false, "message" => "Please configure your email address in order to send an email (or contact your administrator to do it for you)");
         }
 
         return $results;
