@@ -25,7 +25,7 @@ class SystemConfigurationController extends Controller {
         $logger = $this->get('logger');
         $logger->info('AppBundle\Controller\Desktop\SystemConfigurationController.php\getCaptureAction() - Start');
 
-        $confFile = $this->container->getParameter('dir_etc') . "config-general.cfg";
+        $confFile = $this->container->getParameter('dir_config') . "config-general.cfg";
         $confSettingsFile = $this->container->getParameter('sys_config') . "config-general.json";
 
         $results = $this->get('app.svc.configuration')->getSystemConfiguration(
@@ -42,7 +42,7 @@ class SystemConfigurationController extends Controller {
         $receivedName = $inputParams['NAME'];
         $receivedValue = $inputParams['VALUE'];
 
-        $confFile = $this->container->getParameter('dir_etc') . "config-general.cfg";
+        $confFile = $this->container->getParameter('dir_config') . "config-general.cfg";
         $confSettingsFile = $this->container->getParameter('sys_config') . "config-general.json";
 
         $results = $this->get('app.svc.configuration')->updateSystemConfiguration(

@@ -95,7 +95,7 @@ class AdministrativeController extends Controller {
         $logger = $this->get('logger');
         $logger->info('AppBundle\Controller\Desktop\AdministrativeController.php\getPhidgetsPortsAction() - Start');
 
-        $configFile = $this->container->getParameter('dir_etc') . "config-general.cfg";
+        $configFile = $this->container->getParameter('dir_config') . "config-general.cfg";
         $phidgetsensors = $this->get('app.svc.phidgets')->getPhidgetsPorts($configFile);
 
         return new JsonResponse(array(

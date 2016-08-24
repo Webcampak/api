@@ -56,7 +56,7 @@ class SendEmailsCommand extends ContainerAwareCommand
             sleep($sleepTime);
         }        
 
-        $serverTimezone = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-general.cfg', 'cfgservertimezone');            
+        $serverTimezone = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_config') . 'config-general.cfg', 'cfgservertimezone');
         
         $fs = new Filesystem();        
         

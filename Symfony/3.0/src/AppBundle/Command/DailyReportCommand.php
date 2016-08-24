@@ -55,7 +55,7 @@ class DailyReportCommand extends ContainerAwareCommand
             // Second part is dealing with going through those reports and sending users an alert, only for a single day though.               
             self::parseReports($output, $sourceDailyReport);            
         } else {
-            $serverTimezone = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-general.cfg', 'cfgservertimezone');                 
+            $serverTimezone = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_config') . 'config-general.cfg', 'cfgservertimezone');
             
             $firstPictureDay = $this->getContainer()->get('app.svc.pictures.directory')->getFirstPictureDayAmongstAllSources();                        
             self::log($output, 'info', 'execute() - First picture day: ' . $firstPictureDay);

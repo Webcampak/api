@@ -11,7 +11,7 @@ use \DateTime;
 
 class SyncReportsService
 {
-    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, UserService $userService, ConfigurationService $configurationService, $paramDirSyncReports, $paramDirSources, $paramDirEtc) {
+    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, UserService $userService, ConfigurationService $configurationService, $paramDirSyncReports, $paramDirSources, $paramDirConfig) {
         $this->tokenStorage              = $tokenStorage;
         $this->em                           = $doctrine->getManager();
         $this->logger                       = $logger;
@@ -21,7 +21,7 @@ class SyncReportsService
         $this->configurationService         = $configurationService;        
         $this->paramDirSyncReports          = $paramDirSyncReports;
         $this->paramDirSources              = $paramDirSources;
-        $this->paramDirEtc                  = $paramDirEtc;
+        $this->paramDirConfig               = $paramDirConfig;
     }
 
     public function getSyncReportsList(\AppBundle\Entities\Database\Users $userEntity) {
@@ -145,7 +145,7 @@ class SyncReportsService
                                                 . '-'. $inputParams['DST_FTPSERVERID']); 
 
             if (self::searchSyncReportInQueue($jobHash) === false) {
-                $serverTimezone = $this->configurationService->getSourceConfigurationParameterValue($this->paramDirEtc . 'config-general.cfg', 'cfgservertimezone');            
+                $serverTimezone = $this->configurationService->getSourceConfigurationParameterValue($this->paramDirConfig . 'config-general.cfg', 'cfgservertimezone');
                 $currentDate = new \DateTime('now', new \DateTimeZone($serverTimezone));
                 
                 $jsonReportJob = array();

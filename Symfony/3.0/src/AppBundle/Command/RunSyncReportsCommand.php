@@ -64,7 +64,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             sleep($sleepTime);
         }        
 
-        $this->serverTimezone = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-general.cfg', 'cfgservertimezone');   
+        $this->serverTimezone = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_config') . 'config-general.cfg', 'cfgservertimezone');
         
         $fs = new Filesystem();        
         $reportDir = $this->getContainer()->getParameter('dir_sync-reports');        

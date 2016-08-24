@@ -9,19 +9,19 @@ use Symfony\Component\Process\Process;
 
 class DevicesService
 {
-    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, ConfigurationService $configurationService, $paramDirEtc) {
+    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, ConfigurationService $configurationService, $paramDirConfig) {
         $this->tokenStorage              = $tokenStorage;
         $this->em                           = $doctrine->getManager();
         $this->logger                       = $logger;
         $this->connection                   = $doctrine->getConnection();
         $this->doctrine                     = $doctrine;
         $this->configurationService         = $configurationService;
-        $this->paramDirEtc                  = $paramDirEtc;
+        $this->paramDirConfig               = $paramDirConfig;
     }
 
     public function getGphotoDir() {
         $this->logger->info('AppBundle\Services\DevicesService\getGphotoDir()');
-        $configurationFile = $this->paramDirEtc . 'config-general.cfg';
+        $configurationFile = $this->paramDirConfig . 'config-general.cfg';
         $generalConfig = $this->configurationService->openConfigFile($configurationFile);
         if (isset($generalConfig['cfggphotodir']) && $generalConfig['cfggphotodir'] != '') {
             return $generalConfig['cfggphotodir'];
