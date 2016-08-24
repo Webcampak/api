@@ -33,7 +33,7 @@ class SystemController extends Controller {
             $userService = $this->get('app.svc.user');
             $userPermissions = $userService->getUserPermissions($userEntity);
             if (in_array('SOURCES_CONFIGURATION_EXPERT', $userPermissions)) {
-                $createConfiguration = new Process('reboot');
+                $createConfiguration = new Process('sudo /sbin/reboot');
                 $createConfiguration->run();
                 $results = array("success" => true, "message" => "Server will reboot soon");
             } else {
