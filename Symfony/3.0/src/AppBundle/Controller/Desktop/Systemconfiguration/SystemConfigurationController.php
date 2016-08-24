@@ -35,7 +35,7 @@ class SystemConfigurationController extends Controller {
         return new JsonResponse($results);
     }
 
-    public function updateConfigurationAction($inputParams) {
+    public function updateConfigurationAction($inputParams, Request $request) {
         $logger = $this->get('logger');
         $logger->info('AppBundle\Controller\Desktop\SystemConfigurationController.php\updateCaptureAction() - Start');
 
@@ -46,7 +46,7 @@ class SystemConfigurationController extends Controller {
         $confSettingsFile = $this->container->getParameter('sys_config') . "config-general.json";
 
         $results = $this->get('app.svc.configuration')->updateSystemConfiguration(
-            $this->container->get('request')->getClientIp()
+            $request->getClientIp()
             , $receivedName
             , $receivedValue
             , $confFile
