@@ -41,18 +41,23 @@ class SystemLogsService
                     $convert = explode("\n", $content);
                     $convert = array_reverse($convert);
                     $linesCount = count($convert);
+                    $tmparray = array();
                     for ($i=0;$i<$linesCount;$i++) {
-                        $outputlogline = array();
-                        $outputlogline['LINE'] = $i + 1;
-                        $outputlogline['CONTENT'] = $convert[$i];
                         if ($convert[$i] != "") {
-                            array_push($outputlog, $outputlogline);
+                            array_push($tmparray, $convert[$i]);
                         }
                         if (strpos($convert[$i], '===START===') !== false) {
                             break; /* We are back to script execution start, stopping here. */
                         }
                     }
-                    $outputlog = array_reverse($outputlog);
+                    $tmparray = array_reverse($tmparray);
+                    $linesCount = count($tmparray);
+                    for ($i=0;$i<$linesCount;$i++) {
+                        $outputlogline = array();
+                        $outputlogline['LINE'] = $i + 1;
+                        $outputlogline['CONTENT'] = $tmparray[$i];
+                        array_push($outputlog, $outputlogline);
+                    }
                 }
             } else {
                 $this->logger->info('AppBundle\Services\SystemLogsService\getLogFile() - Request some configuration logs');
