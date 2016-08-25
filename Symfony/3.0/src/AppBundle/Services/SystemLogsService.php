@@ -39,6 +39,7 @@ class SystemLogsService
                 if (is_file($this->paramDirLogs . $logfile)) {
                     $content = file_get_contents($this->paramDirLogs . $logfile);
                     $convert = explode("\n", $content);
+                    $convert = array_reverse($convert);
                     $linesCount = count($convert);
                     for ($i=0;$i<$linesCount;$i++) {
                         $outputlogline = array();
@@ -47,7 +48,11 @@ class SystemLogsService
                         if ($convert[$i] != "") {
                             array_push($outputlog, $outputlogline);
                         }
-                    }                    
+                        if (strpos($convert[$i], '===START===') !== false) {
+                            break; /* We are back to script execution start, stopping here. */
+                        }
+                    }
+                    $outputlog = array_reverse($outputlog);
                 }
             } else {
                 $this->logger->info('AppBundle\Services\SystemLogsService\getLogFile() - Request some configuration logs');
