@@ -27,132 +27,90 @@ class StatsService
         return parse_ini_file($statsFile, TRUE, INI_SCANNER_RAW);
     }
 
-    public function getLatestStatsFile($directory) {
-        $this->logger->info('AppBundle\Services\StatsService\getLatestStatsFile()');
+    public function getFileList($receivedRange) {
+        $this->logger->info('AppBundle\Services\StatsService\getFileList(): Range: ' . $receivedRange);
+        $fileList = array();
+        $scanDirectory = $this->paramDirStats;
+        if ($receivedRange !== 'recent') {
+            $scanDirectory = $this->paramDirStats . "consolidated/";
+        }
+        $this->logger->info('AppBundle\Services\StatsService\getFileList(): Scanning directory: ' . $scanDirectory);
         $finder = new Finder();
+        $finder->depth(0);
         $finder->files();
         $finder->sort(function (\SplFileInfo $a, \SplFileInfo $b) { return strcmp($b->getRealpath(), $a->getRealpath()); });
-        $finder->files()->name('20*.txt');
-        $finder->in($directory);
+        $finder->files()->name('20*.jsonl');
+        $finder->in($scanDirectory);
         foreach ($finder as $file) {
-            $this->logger->info('AppBundle\Services\StatsService\getLatestStatsFile() - Looking at file: ' . $file->getFilename());
-            return $file;
-            break;
-        }
-    }
-
-    public function parseSystemStatsFile(SplFileInfo $statsFile, $groupBy) {
-        $this->logger->info('AppBundle\Services\StatsService\parseSystemStatsFile()');
-        $this->logger->info('AppBundle\Services\StatsService\parseSystemStatsFile(): Parsing file: ' . $statsFile->getFilename());
-        $statsFileContent = self::openStatsFile($statsFile->getRealpath());
-        //Quick and dirty way until better logging is implemented.
-        $sourcestats = array();
-        $tmpsourcestats = array(
-            'BandwidthIn' => 0
-            , 'BandwidthOut' => 0
-            , 'BandwidthTotal' => 0
-            , 'MemoryUsageTotal' => 0
-            , 'MemoryUsageUsed' => 0
-            , 'MemoryUsageFree' => 0
-            , 'DiskUsageTotal' => 0
-            , 'DiskUsageUsed' => 0
-            , 'DiskUsageFree' => 0
-            , 'DiskUsagePercent' => 0
-            , 'MemoryUsagePercent' => 0
-            , 'CPUUsagePercent' => 0
-        );
-        $cpt = 0;
-        foreach($statsFileContent as $key=>$value) {
-            if ($groupBy == 'day') {
-                if (isset($value['Timestamp']))         {
-                    $tmpsourcestats['Timestamp']           = $value['Timestamp'];
-                    $tmpsourcestats['DATE']                = date(DATE_RFC822, $value['Timestamp']);
-                }
-                if (isset($value['BandwidthIn']))       {$tmpsourcestats['BandwidthIn']         = $tmpsourcestats['BandwidthIn'] + round($value['BandwidthIn']);                     }
-                if (isset($value['BandwidthOut']))      {$tmpsourcestats['BandwidthOut']        = $tmpsourcestats['BandwidthOut'] + round($value['BandwidthOut']);                    }
-                if (isset($value['BandwidthTotal']))    {$tmpsourcestats['BandwidthTotal']      = $tmpsourcestats['BandwidthTotal'] + round($value['BandwidthTotal']);                  }
-                if (isset($value['MemoryUsageTotal']))  {$tmpsourcestats['MemoryUsageTotal']    = $tmpsourcestats['MemoryUsageTotal'] + round($value['MemoryUsageTotal'] / 1024 / 1024);  }
-                if (isset($value['MemoryUsageUsed']))   {$tmpsourcestats['MemoryUsageUsed']     = $tmpsourcestats['MemoryUsageUsed'] + round($value['MemoryUsageUsed'] / 1024 / 1024);   }
-                if (isset($value['MemoryUsageFree']))   {$tmpsourcestats['MemoryUsageFree']     = $tmpsourcestats['MemoryUsageFree'] + round($value['MemoryUsageFree'] / 1024 / 1024);   }
-                if (isset($value['DiskUsageTotal']))    {$tmpsourcestats['DiskUsageTotal']      = $tmpsourcestats['DiskUsageTotal'] + round($value['DiskUsageTotal'] / 1024 / 1024);    }
-                if (isset($value['DiskUsageUsed']))     {$tmpsourcestats['DiskUsageUsed']       = $tmpsourcestats['DiskUsageUsed'] + round($value['DiskUsageUsed'] / 1024 / 1024);     }
-                if (isset($value['DiskUsageFree']))     {$tmpsourcestats['DiskUsageFree']       = $tmpsourcestats['DiskUsageFree'] + round($value['DiskUsageFree'] / 1024 / 1024);     }
-                if (isset($value['DiskUsagePercent']))  {$tmpsourcestats['DiskUsagePercent']    = $tmpsourcestats['DiskUsagePercent'] + round($value['DiskUsagePercent']);	}
-                if (isset($value['MemoryUsagePercent'])){$tmpsourcestats['MemoryUsagePercent']  = $tmpsourcestats['MemoryUsagePercent'] + round($value['MemoryUsagePercent']);	}
-                if (isset($value['CPUUsagePercent']))   {$tmpsourcestats['CPUUsagePercent'] 	= $tmpsourcestats['CPUUsagePercent'] + round($value['CPUUsagePercent']);	}
-                $cpt++;
-                if ($cpt == count($statsFileContent)) {
-                    $this->logger->info('AppBundle\Services\StatsService\parseSystemStatsFile(): Last record of the array: ' . $cpt . '/' . count($statsFileContent));
-                    $tmpsourcestats['BandwidthIn'] = round($tmpsourcestats['BandwidthIn'] / $cpt);
-                    $tmpsourcestats['BandwidthOut'] = round($tmpsourcestats['BandwidthOut'] / $cpt);
-                    $tmpsourcestats['BandwidthTotal'] = round($tmpsourcestats['BandwidthTotal'] / $cpt);
-                    $tmpsourcestats['MemoryUsageTotal'] = round($tmpsourcestats['MemoryUsageTotal'] / $cpt);
-                    $tmpsourcestats['MemoryUsageUsed'] = round($tmpsourcestats['MemoryUsageUsed'] / $cpt);
-                    $tmpsourcestats['MemoryUsageFree'] = round($tmpsourcestats['MemoryUsageFree'] / $cpt);
-                    $tmpsourcestats['DiskUsageTotal'] = round($tmpsourcestats['DiskUsageTotal'] / $cpt);
-                    $tmpsourcestats['DiskUsageUsed'] = round($tmpsourcestats['DiskUsageUsed'] / $cpt);
-                    $tmpsourcestats['DiskUsageFree'] = round($tmpsourcestats['DiskUsageFree'] / $cpt);
-                    $tmpsourcestats['DiskUsagePercent'] = round($tmpsourcestats['DiskUsagePercent'] / $cpt);
-                    $tmpsourcestats['MemoryUsagePercent'] = round($tmpsourcestats['MemoryUsagePercent'] / $cpt);
-                    $tmpsourcestats['CPUUsagePercent'] = round($tmpsourcestats['CPUUsagePercent'] / $cpt);
-                    if (isset($tmpsourcestats['Timestamp']) && $tmpsourcestats['Timestamp'] != "" ) {
-                        array_push($sourcestats, $tmpsourcestats);
-                    }
-                }
+            if ($receivedRange == 'recent') {
+                // We keep all files, sorting is done later on
+                $this->logger->info('AppBundle\Services\StatsService\getFileList() - Adding file: ' . $file->getFilename());
+                array_push($fileList, $file);
+            } elseif ($receivedRange == 'hours' && strlen($file->getFilename()) === 14) {
+                // If hours, we only keep daily files (20160830.jsonl)
+                $this->logger->info('AppBundle\Services\StatsService\getFileList() - Adding file: ' . $file->getFilename());
+                array_push($fileList, $file);
+            } elseif ($receivedRange == 'days' && strlen($file->getFilename()) === 12) {
+                // If hours, we only keep daily files (201608.jsonl)
+                $this->logger->info('AppBundle\Services\StatsService\getFileList() - Adding file: ' . $file->getFilename());
+                array_push($fileList, $file);
+            } elseif ($receivedRange == 'months' && strlen($file->getFilename()) === 10) {
+                // If hours, we only keep daily files (2016.jsonl)
+                $this->logger->info('AppBundle\Services\StatsService\getFileList() - Adding file: ' . $file->getFilename());
+                array_push($fileList, $file);
             } else {
-                $tmpsourcestats = array();
-                if (isset($value['Timestamp']))         {
-                    $tmpsourcestats['Timestamp']           = $value['Timestamp'];
-                    $tmpsourcestats['DATE']                = date(DATE_RFC822, $value['Timestamp']);
-                }
-                if (isset($value['BandwidthIn']))       {$tmpsourcestats['BandwidthIn']         = round($value['BandwidthIn']);                     }
-                if (isset($value['BandwidthOut']))      {$tmpsourcestats['BandwidthOut']        = round($value['BandwidthOut']);                    }
-                if (isset($value['BandwidthTotal']))    {$tmpsourcestats['BandwidthTotal']      = round($value['BandwidthTotal']);                  }
-                if (isset($value['MemoryUsageTotal']))  {$tmpsourcestats['MemoryUsageTotal']    = round($value['MemoryUsageTotal'] / 1024 / 1024);  }
-                if (isset($value['MemoryUsageUsed']))   {$tmpsourcestats['MemoryUsageUsed']     = round($value['MemoryUsageUsed'] / 1024 / 1024);   }
-                if (isset($value['MemoryUsageFree']))   {$tmpsourcestats['MemoryUsageFree']     = round($value['MemoryUsageFree'] / 1024 / 1024);   }
-                if (isset($value['DiskUsageTotal']))    {$tmpsourcestats['DiskUsageTotal']      = round($value['DiskUsageTotal'] / 1024 / 1024);    }
-                if (isset($value['DiskUsageUsed']))     {$tmpsourcestats['DiskUsageUsed']       = round($value['DiskUsageUsed'] / 1024 / 1024);     }
-                if (isset($value['DiskUsageFree']))     {$tmpsourcestats['DiskUsageFree']       = round($value['DiskUsageFree'] / 1024 / 1024);     }
-                if (isset($value['DiskUsagePercent']))  {$tmpsourcestats['DiskUsagePercent']    = round($value['DiskUsagePercent']);	}
-                if (isset($value['MemoryUsagePercent'])){$tmpsourcestats['MemoryUsagePercent']  = round($value['MemoryUsagePercent']);	}
-                if (isset($value['CPUUsagePercent']))   {$tmpsourcestats['CPUUsagePercent'] 	= round($value['CPUUsagePercent']);	}
-                if (isset($tmpsourcestats['Timestamp']) && $tmpsourcestats['Timestamp'] != "" ) {
-                    array_push($sourcestats, $tmpsourcestats);
-                }
+                $this->logger->info('AppBundle\Services\StatsService\getFileList() - File outside of requested range: ' . $file->getFilename());
             }
         }
-        $this->logger->info('AppBundle\Services\StatsService\parseSystemStatsFile(): Output: ' . serialize($sourcestats));
-        return $sourcestats;
+        return $fileList;
+    }
+
+    public function getFileData($fileList) {
+        // Take a list of files and extract the first 10 data records
+        $maxRecords = 100;
+        $this->logger->info('AppBundle\Services\StatsService\getFileData()');
+        $fileData = array();
+        $recordCount = 0;
+        foreach ($fileList as $currentFile) {
+            $this->logger->info('AppBundle\Services\StatsService\getFileData() - Going through file: ' . $currentFile);
+            if ($recordCount >= $maxRecords) {break;}
+            $fileContent = array_reverse(file($currentFile));
+            foreach ($fileContent as $currentFileLine) {
+                $this->logger->info('AppBundle\Services\StatsService\getFileData() - Current Line: ' . $currentFileLine);
+                if ($recordCount >= $maxRecords) {break;}
+                $currentRecord = json_decode($currentFileLine, true);
+                // If recent, sample JSON:
+                //{"date": "2016-09-01T16:25:01.516383+02:00", "BandwidthIn": "0.12", "BandwidthOut": "0.12", "BandwidthTotal": "0.24", "MemoryUsageTotal": "6108524544", "MemoryUsageUsed": "2942509056", "MemoryUsageFree": "3166015488", "MemoryUsagePercent": "28.1", "DiskUsageTotal": "61312446464", "DiskUsageUsed": "23133470720", "DiskUsageFree": "35040800768", "DiskUsagePercent": "37.7", "CPUUsagePercent": "18.5"}
+                // If not recent, sample JSON:
+                //{"date": "2016-08-30T19:00:00+02:00", "BandwidthIn": {"min": 0, "max": 0, "avg": 0}, "BandwidthOut": {"min": 0, "max": 0, "avg": 0}, "BandwidthTotal": {"min": 0, "max": 0, "avg": 0}, "MemoryUsageTotal": {"min": 6108532736, "max": 6108532736, "avg": 6108532736}, "MemoryUsageUsed": {"min": 5697355776, "max": 5717053440, "avg": 5708737536}, "MemoryUsageFree": {"min": 391479296, "max": 411176960, "avg": 399795200}, "MemoryUsagePercent": {"min": 43, "max": 44, "avg": 43}, "DiskUsageTotal": {"min": 61312446464, "max": 61312446464, "avg": 61312446464}, "DiskUsageUsed": {"min": 20793053184, "max": 21026095104, "avg": 20910688256}, "DiskUsageFree": {"min": 37148176384, "max": 37381218304, "avg": 37263583232}, "DiskUsagePercent": {"min": 33, "max": 34, "avg": 34}, "CPUUsagePercent": {"min": 1, "max": 2, "avg": 1}}
+                if (is_array($currentRecord['BandwidthIn'])) {$currentRecord['BandwidthIn'] = $currentRecord['BandwidthIn']['avg'];}
+                if (is_array($currentRecord['BandwidthOut'])) {$currentRecord['BandwidthOut'] = $currentRecord['BandwidthOut']['avg'];}
+                if (is_array($currentRecord['BandwidthTotal'])) {$currentRecord['BandwidthTotal'] = $currentRecord['BandwidthTotal']['avg'];}
+                if (is_array($currentRecord['MemoryUsageTotal'])) {$currentRecord['MemoryUsageTotal'] = $currentRecord['MemoryUsageTotal']['avg'];}
+                if (is_array($currentRecord['MemoryUsageUsed'])) {$currentRecord['MemoryUsageUsed'] = $currentRecord['MemoryUsageUsed']['avg'];}
+                if (is_array($currentRecord['MemoryUsageFree'])) {$currentRecord['MemoryUsageFree'] = $currentRecord['MemoryUsageFree']['avg'];}
+                if (is_array($currentRecord['MemoryUsagePercent'])) {$currentRecord['MemoryUsagePercent'] = $currentRecord['MemoryUsagePercent']['avg'];}
+                if (is_array($currentRecord['DiskUsageUsed'])) {$currentRecord['DiskUsageUsed'] = $currentRecord['DiskUsageUsed']['avg'];}
+                if (is_array($currentRecord['DiskUsageFree'])) {$currentRecord['DiskUsageFree'] = $currentRecord['DiskUsageFree']['avg'];}
+                if (is_array($currentRecord['DiskUsagePercent'])) {$currentRecord['DiskUsagePercent'] = $currentRecord['DiskUsagePercent']['avg'];}
+                if (is_array($currentRecord['DiskUsageTotal'])) {$currentRecord['DiskUsageTotal'] = $currentRecord['DiskUsageTotal']['avg'];}
+                if (is_array($currentRecord['CPUUsagePercent'])) {$currentRecord['CPUUsagePercent'] = $currentRecord['CPUUsagePercent']['avg'];}
+                array_push($fileData, $currentRecord);
+                $recordCount++;
+            }
+        }
+        return $fileData;
     }
 
     public function getSystemStats($receivedRange) {
         $this->logger->info('AppBundle\Services\StatsService\getSystemStats()');
-        $latestStatsFile = self::getLatestStatsFile($this->paramDirStats);
 
-        if ($receivedRange == "day") {
-            $sourcestats = self::parseSystemStatsFile($latestStatsFile, null);
-        } else {
-            $finder = new Finder();
-            $finder->files();
-            $groupBy = "day";
-            if ($receivedRange == "month") {
-                $finder->sortByName();
-                $finder->files()->name(substr($latestStatsFile->getFilename(), 0,6) . '*.txt');
-            } else if ($receivedRange == "year") {
-                $finder->sortByName();
-                $finder->files()->name(substr($latestStatsFile->getFilename(), 0,4) . '*.txt');
-            }
-            $finder->in($this->paramDirStats);
-            $sourcestats = array();
-            foreach ($finder as $file) {
-                $this->logger->info('AppBundle\Services\StatsService\getSystemStats() - Looking at file: ' . $file->getFilename());
-                $sourcestats = array_merge($sourcestats, self::parseSystemStatsFile($file, $groupBy));
-            }
-        }
+        //1 - Get list of files based on the requested range
+        $fileList = self::getFileList($receivedRange);
+        $fileData = self::getFileData($fileList);
 
-        $results['results'] = $sourcestats;
-        $results['total'] = count($sourcestats);
+        $results['results'] = $fileData;
+        $results['total'] = count($fileData);
         return $results;
     }
 
