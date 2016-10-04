@@ -47,7 +47,8 @@ class ConfigurationService
                 if (str_replace(' ', '', $wecampakConf[0]) == $configName) {
                     //Specific case if the config is a calendar day
                     if (strpos($configName, "cfgcronday") !== false) {$configNewValue = str_replace(',', '","', $configNewValue);}
-                    $convert[$i] = $configName . '="' . $configNewValue . '" ';                        
+                    if (strpos($configName, "cfgphidgetsensor") !== false && strlen($configName) === 17) {$configNewValue = str_replace(',', '","', $configNewValue);}
+                    $convert[$i] = $configName . '="' . $configNewValue . '" ';
                 }
             }
         }
