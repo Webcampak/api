@@ -172,7 +172,7 @@ class PicturesService
             $finder = new Finder();
             $finder->files();
             $finder->sortByName();
-            $finder->files()->name('Sensor-*.png');
+            $finder->files()->name('sensor-*.png');
             $finder->in($pictureDirectory);
             $sensorCount = 1;
             foreach ($finder as $file) {
