@@ -45,7 +45,7 @@ class DownloadService
     public function serveFile($completePath, $pictureWidth = null) {
         $this->logger->info('AppBundle\Services\DownloadService\serveFile() - Path is a file');
         $fileFormat = pathinfo($completePath, PATHINFO_EXTENSION);
-        $allowedExtensions = array('png', 'jpg', 'raw', 'txt', 'jpeg', 'json', 'mp3', 'JPG', 'JPEG', 'RAW', 'CR2', 'mp4', 'avi');
+        $allowedExtensions = array('png', 'jpg', 'raw', 'txt', 'jpeg', 'json', 'mp3', 'JPG', 'JPEG', 'RAW', 'CR2', 'mp4', 'avi', 'jsonl');
         if (in_array($fileFormat, $allowedExtensions) && $pictureWidth === null) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $contentType = finfo_file($finfo, $completePath);
