@@ -199,6 +199,14 @@ class UserService
             array_push($dbresults, array('CODE' => 'CHANGEPASSWORD', 'VALUE' => 'Y'));
         }
 
+        if ($userEntity->getCus() !== null && $userEntity->getCus()->getStyleBgColor() != '') {
+            array_push($dbresults, array('CODE' => 'STYLE_BG_COLOR', 'VALUE' => $userEntity->getCus()->getStyleBgColor()));
+        }
+
+        if ($userEntity->getCus() !== null && $userEntity->getCus()->getStyleBgLogo() != '') {
+            array_push($dbresults, array('CODE' => 'STYLE_BG_LOGO', 'VALUE' => $userEntity->getCus()->getStyleBgLogo()));
+        }
+
         $this->logger->info('AppBundle\Services\UserService\getSettings() - Looking for release info in: ' . $this->kernelRootDir. '/../../../../build.txt');
         if (is_file($this->kernelRootDir. '/../../../../build.txt')) {
             $currentBuild = file_get_contents($this->kernelRootDir. '../../../build.txt');

@@ -43,6 +43,19 @@ class Customers
      */
     private $name;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="STYLE_BG_COLOR", type="string", length=7)
+     */
+    private $styleBgColor;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="STYLE_BG_LOGO", type="string", length=250)
+     */
+    private $styleBgLogo;
 
     /**
      * Get id
@@ -76,4 +89,51 @@ class Customers
     {
         return $this->name;
     }
+
+    /**
+     * Set styleBgColor
+     *
+     * @param string $styleBgColor
+     * @return Customers
+     */
+    public function setStyleBgColor($styleBgColor)
+    {
+        $this->styleBgColor = $styleBgColor;
+
+        return $this;
+    }
+
+    /**
+     * Get styleBgColor
+     *
+     * @return string
+     */
+    public function getStyleBgColor()
+    {
+        return $this->styleBgColor;
+    }
+
+    /**
+     * Set styleBgLogo
+     *
+     * @param string $styleBgLogo
+     * @return Customers
+     */
+    public function setStyleBgLogo($styleBgLogo)
+    {
+        $this->styleBgLogo = $styleBgLogo;
+
+        return $this;
+    }
+
+    /**
+     * Get styleBgLogo
+     *
+     * @return string
+     */
+    public function getStyleBgLogo()
+    {
+        return $this->styleBgLogo;
+    }
+
 }

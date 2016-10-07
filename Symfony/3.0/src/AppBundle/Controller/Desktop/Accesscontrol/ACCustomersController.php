@@ -31,6 +31,8 @@ class ACCustomersController extends Controller {
             SELECT
                 CUS_ID
                 , NAME
+                , STYLE_BG_COLOR
+                , STYLE_BG_LOGO
             FROM
                 CUSTOMERS
             ORDER BY NAME
@@ -52,6 +54,8 @@ class ACCustomersController extends Controller {
         $logger->info('AppBundle\Controller\Desktop\ACCustomersController.php\addCustomerAction() - Start');
 
         $receivedName = $inputParams['NAME'];
+        $receivedStyleBgColor = $inputParams['STYLE_BG_COLOR'];
+        $receivedStyleBgLogo = $inputParams['STYLE_BG_LOGO'];
 
         $searchCustomername = $this->getDoctrine()
           ->getRepository('AppBundle:Customers')
@@ -62,6 +66,8 @@ class ACCustomersController extends Controller {
         } else {
             $newCustomerEntity = new Customers();
             $newCustomerEntity->setName($receivedName);
+            $newCustomerEntity->setStyleBgColor($receivedStyleBgColor);
+            $newCustomerEntity->setStyleBgLogo($receivedStyleBgLogo);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($newCustomerEntity);
@@ -78,14 +84,15 @@ class ACCustomersController extends Controller {
         $logger->info('AppBundle\Controller\Desktop\ACCustomersController.php\updateCustomerAction() - Start');
 
         $receivedCusId = $inputParams['CUS_ID'];
-        $receivedName = $inputParams['NAME'];
 
         $updateCustomersEntity = $this->getDoctrine()
                 ->getRepository('AppBundle:Customers')
                 ->find($receivedCusId);
 
         if ($updateCustomersEntity) {
-            $updateCustomersEntity->setName($receivedName);
+            if (isset($inputParams['NAME'])) {$updateCustomersEntity->setName($inputParams['NAME']);}
+            if (isset($inputParams['STYLE_BG_COLOR'])) {$updateCustomersEntity->setStyleBgColor($inputParams['STYLE_BG_COLOR']);}
+            if (isset($inputParams['STYLE_BG_LOGO'])) {$updateCustomersEntity->setStyleBgLogo($inputParams['STYLE_BG_LOGO']);}
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($updateCustomersEntity);
