@@ -38,7 +38,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
     protected function configure() {
         $this
             ->setName('wpak:runsyncreports')
-            ->setDescription('Process the email queue and send emails')
+            ->setDescription('Process the sync report queue')
             ->addArgument('sleep', InputArgument::OPTIONAL, 'Sleep before starting to process the queue (seconds)')                
         ;
     }
@@ -262,10 +262,11 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         $ftpServersFromConfigFile = $this->getContainer()->get('app.svc.ftp')->getServersFromConfigFile($ftpConfigFile);
         $ftpServer = $this->getContainer()->get('app.svc.ftp')->getFtpServerbyId($ftpServersFromConfigFile, $serverId);
         $this->ftpServer = $ftpServer;
-        $this->ftpDuDirectory = $duDirectory;
+        //$this->ftpDuDirectory = $duDirectory;
         self::log('info', 'runFtpDu(): FTP Server: ' . $ftpServer['NAME']);
-        $this->duParsedOutput = array('list' => array(), 'count' => array('jpg' => 0, 'raw' => 0, 'total' => 0), 'size' => array('jpg' => 0, 'raw' => 0, 'total' => 0));                     
-        $runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . $duDirectory . ' -e "du -b -a;exit"');
+        $this->duParsedOutput = array('list' => array(), 'count' => array('jpg' => 0, 'raw' => 0, 'total' => 0), 'size' => array('jpg' => 0, 'raw' => 0, 'total' => 0));
+        //$runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . $duDirectory . ' -e "du -b -a;exit"');
+        $runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . ' -e "du -b -a;exit"');
         $runSystemProcess->setTimeout(120000);
         $runSystemProcess->run(function ($type, $buffer) {
             if (Process::ERR === $type) {
@@ -276,7 +277,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                     $duParsedLine = self::parseDuLine($processLine, './');
                     if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw')) {
                         $duParsedLine['path'] = substr($duParsedLine['path'], 1); #Hack: When running ftp du, remove first characted of the path, which is typically a /
-                        $duParsedLine['path'] = $this->ftpDuDirectory . $duParsedLine['path'];
+                        //$duParsedLine['path'] = $this->ftpDuDirectory . $duParsedLine['path'];
                         //self::log('info', 'runFtpDu(): Filepath: ' . $duParsedLine['path']);
                         $currentMd5 = md5($duParsedLine['size'] . $duParsedLine['type'] . $duParsedLine['path']);
                         $this->duParsedOutput['list'][$currentMd5] = $duParsedLine;
