@@ -40,8 +40,8 @@ class XferReportsService
                 $jobCompleted = $threadContent['last_job']['date_completed'];
                 $jobDirection = $threadContent['last_job']['direction'];
                 $jobSize = $threadContent['last_job']['bytes'];
-                $jobSeconds = $threadContent['last_job']['seconds'];
-                $jobRate = round($threadContent['last_job']['bytes'] / $threadContent['last_job']['seconds']);
+                $jobSeconds = $threadContent['last_job']['transfertime'];
+                $jobRate = round($threadContent['last_job']['bytes'] / ($threadContent['last_job']['seconds']/1000));
             } else {
                 $jobStarted = null;
                 $jobCompleted = null;
