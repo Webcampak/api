@@ -14,6 +14,8 @@ if ($app->getEnvironment() == 'dev') {
     <meta charset="UTF-8">
     <title>Webcampak 3.0 Dashboard</title>
 
+    <link rel="icon" type="image/ico" href="../../../resources/images/favicon.ico">
+
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
     <?php /* Loading Jquery library */ ?>
