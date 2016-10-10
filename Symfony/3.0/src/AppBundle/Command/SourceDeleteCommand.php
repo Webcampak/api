@@ -80,7 +80,6 @@ class SourceDeleteCommand extends ContainerAwareCommand
         $etcDirectory = $this->getContainer()->getParameter('dir_etc');
 
         self::moveFile($output, $etcDirectory . 'config-source' . $sourceId . '.cfg',                $targetDirectory . 'etc/' . 'config-source' . $sourceId . '.cfg');
-        //self::moveFile($output, $etcDirectory . 'config-source' . $sourceId . '.yml',                $targetDirectory . 'etc/' . 'config-source' . $sourceId . '.yml');
         self::moveFile($output, $etcDirectory . 'config-source' . $sourceId . '-video.cfg',          $targetDirectory . 'etc/' . 'config-source' . $sourceId . '-video.cfg');
         self::moveFile($output, $etcDirectory . 'config-source' . $sourceId . '-videocustom.cfg',    $targetDirectory . 'etc/' . 'config-source' . $sourceId . '-videocustom.cfg');
         self::moveFile($output, $etcDirectory . 'config-source' . $sourceId . '-videopost.cfg',      $targetDirectory . 'etc/' . 'config-source' . $sourceId . '-videopost.cfg');

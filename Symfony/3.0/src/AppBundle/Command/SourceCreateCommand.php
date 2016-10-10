@@ -52,11 +52,6 @@ class SourceCreateCommand extends ContainerAwareCommand
             self::deleteExistingSource($output, $sourceId);
                        
             // Prepare configuration
-            //self::prepareConfigurationYaml($output, 'config-source.json', 'config-source' . $sourceId . '.yml');
-            //self::prepareConfigurationYaml($output, 'config-source-video.json', 'config-source' . $sourceId . '-video.yml');
-            //self::prepareConfigurationYaml($output, 'config-source-videocustom.json', 'config-source' . $sourceId . '-videocustom.yml');
-            //self::prepareConfigurationYaml($output, 'config-source-videopost.json', 'config-source' . $sourceId . '-videopost.yml');
-            //self::prepareConfigurationYaml($output, 'config-source-ftpservers.json', 'config-source' . $sourceId . '-ftpservers.yml');            
             self::prepareConfiguration($output, 'config-source.json', 'config-source' . $sourceId . '.cfg');
             self::prepareConfiguration($output, 'config-source-video.json', 'config-source' . $sourceId . '-video.cfg');
             self::prepareConfiguration($output, 'config-source-videocustom.json', 'config-source' . $sourceId . '-videocustom.cfg');

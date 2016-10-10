@@ -110,23 +110,6 @@ class UserService
         $this->logger->info('AppBundle\Services\UserService\hasCurrentUserAccessToSourceId()');
 
         return self::hasUserAccessToSourceId($this->currentUserEntity, $sourceId);
-        /*
-        $isAllowed = false;
-        if (is_a($this->currentUserEntity, 'AppBundle\Entities\Database\Users') && $this->currentUserEntity->getUsername() == 'root') {
-            $this->logger->info('AppBundle\Services\UserService\hasCurrentUserAccessToSourceId() - User is root, granting access to source');
-            $isAllowed = true;
-        } else if (is_a($this->currentUserEntity, 'AppBundle\Entities\Database\Users')) {
-            $userSources = self::getCurrentSourcesByUseId($this->currentUserEntity->getUseId());
-            foreach($userSources as $currentUserSource) {
-                if ($currentUserSource['SOURCEID'] == $sourceId) {
-                    $this->logger->info('AppBundle\Services\UserService\hasCurrentUserAccessToSourceId() - User is allowed access to the source');
-                    $isAllowed = true;
-                }
-            }
-        }
-        return $isAllowed;
-         * 
-         */
     }
     
     public function hasUserAccessToSourceId($userEntity, $sourceId) {

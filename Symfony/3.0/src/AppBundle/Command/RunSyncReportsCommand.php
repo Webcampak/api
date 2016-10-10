@@ -164,7 +164,6 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                     $xferContent = array();
                     $xferContent['job'] = array();
                     $xferContent['job']['status'] = 'queued';
-                    #$xferContent['job']['path'] = $currentMissingFile['path'];                   
                     $xferContent['job']['source'] = $this->reportContent['job']['source'];
                     $xferContent['job']['source']['filepath'] = $currentMissingFile['path'];
                     $xferContent['job']['destination'] = $this->reportContent['job']['destination'];
@@ -193,8 +192,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
     
     function processReport($currentFileDir, $currentFileName) {
         self::log('info', 'AlertsCommand.php\processReport()');
-        //$fs = new Filesystem();
-        
+
         //1- Add source files
         if ($this->reportContent['job']['source']['type'] === 'filesystem') {
             $parsedDu = self::runFilesystemDu($this->reportContent['job']['source']['sourceid'], 'pictures/');            
@@ -212,7 +210,6 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         } else if ($this->reportContent['job']['destination']['type'] === 'ftp') {
             $parsedDu = self::runFtpDu($this->reportContent['job']['destination']['sourceid'], $this->reportContent['job']['destination']['ftpserverid'], 'pictures/');                        
         }        
-//        $parsedDu = self::runFilesystemDu($this->reportContent['job']['destination']['path']);
         if ($parsedDu !== false) {
             $this->reportContent['result']['destination']['files'] = $parsedDu;
             self::processLog($currentFileDir . $currentFileName, 'Scanned destination directory for pictures');            
@@ -261,10 +258,8 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         $ftpServersFromConfigFile = $this->getContainer()->get('app.svc.ftp')->getServersFromConfigFile($ftpConfigFile);
         $ftpServer = $this->getContainer()->get('app.svc.ftp')->getFtpServerbyId($ftpServersFromConfigFile, $serverId);
         $this->ftpServer = $ftpServer;
-        //$this->ftpDuDirectory = $duDirectory;
         self::log('info', 'runFtpDu(): FTP Server: ' . $ftpServer['NAME']);
         $this->duParsedOutput = array('list' => array(), 'count' => array('jpg' => 0, 'raw' => 0, 'total' => 0), 'size' => array('jpg' => 0, 'raw' => 0, 'total' => 0));
-        //$runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . $duDirectory . ' -e "du -b -a;exit"');
         $runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . ' -e "du -b -a;exit"');
         $runSystemProcess->setTimeout(120000);
         $runSystemProcess->run(function ($type, $buffer) {
@@ -276,8 +271,6 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                     $duParsedLine = self::parseDuLine($processLine, './');
                     if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw')) {
                         $duParsedLine['path'] = substr($duParsedLine['path'], 1); #Hack: When running ftp du, remove first characted of the path, which is typically a /
-                        //$duParsedLine['path'] = $this->ftpDuDirectory . $duParsedLine['path'];
-                        //self::log('info', 'runFtpDu(): Filepath: ' . $duParsedLine['path']);
                         $currentMd5 = md5($duParsedLine['size'] . $duParsedLine['type'] . $duParsedLine['path']);
                         $this->duParsedOutput['list'][$currentMd5] = $duParsedLine;
                         $this->duParsedOutput['count']['total'] = $this->duParsedOutput['count']['total']+1;
@@ -306,7 +299,6 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         $runSystemProcess->run();
         $processOutputLines = explode("\n", $runSystemProcess->getOutput());
         foreach($processOutputLines as $processLine) {
-            //$duParsedLine = self::parseDuLine($processLine, $fullDuDirectoryPath);
             $duParsedLine = self::parseDuLine($processLine, $sourcePath);
             if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw')) {
                 $currentMd5 = md5($duParsedLine['size'] . $duParsedLine['type'] . $duParsedLine['path']);

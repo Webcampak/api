@@ -61,7 +61,6 @@ class SendEmailsCommand extends ContainerAwareCommand
         $fs = new Filesystem();        
         
         $emailDir = $this->getContainer()->getParameter('dir_emails');
-        $currentFileDir = $emailDir . 'queued/';
         $finder = new Finder();
         $finder->files();
         $finder->sortByName();
@@ -150,7 +149,6 @@ class SendEmailsCommand extends ContainerAwareCommand
             $newEmail->setReplyTo(array($emailContent['content']['FROM']['email']));                        
         }
         $newEmail->setReturnPath($emailContent['content']['FROM']['email']);
-        //$newEmail->setReplyTo(array($emailContent['content']['FROM']['email'] => $emailContent['content']['FROM']['name']));
         $emailContent = self::processLog($output, $emailContent, $currentFileDir . $currentFileName, $serverTimezone, 'Swift: Set FROM field');
         
         // Set To
