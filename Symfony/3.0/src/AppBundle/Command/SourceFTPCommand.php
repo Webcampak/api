@@ -46,10 +46,6 @@ class SourceFTPCommand extends ContainerAwareCommand
 
     function updateFTP(OutputInterface $output) {
         self::log($output, 'info', 'SourceFTPCommand.php\updateFTP() - Update ftp for all sources');
-        $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
-        $wpakBinDirectory = $this->getContainer()->getParameter('dir_bin');
-
-//        self::runSystemProcess($output, 'SourceFTPCommand.php\updateFTP() - ', "sudo python " . $wpakBinDirectory . "wpak-createlocalftpaccounts.py -g " . $wpakConfigDirectory . "config-general.cfg");
         self::runSystemProcess($output, 'SourceFTPCommand.php\updateFTP() - ', "sudo /usr/local/bin/webcampak system ftp");
     }
 

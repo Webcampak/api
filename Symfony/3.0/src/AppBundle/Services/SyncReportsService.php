@@ -243,7 +243,6 @@ class SyncReportsService
             }
             foreach ($userReportsFiles as $reportFile) {
                 $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - File: ' . $reportFile);
-                $reportContent = self::readReportFile($reportFile);
                 $reportFilePathInfo = pathinfo($reportFile);
                 if ($inputParams['FILENAME'] === $reportFilePathInfo['basename']) {
                     $fs = new Filesystem();

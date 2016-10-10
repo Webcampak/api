@@ -6,8 +6,6 @@ use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Filesystem\Filesystem;
-use \DateTime;
 
 class XferReportsService
 {
