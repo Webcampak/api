@@ -40,16 +40,16 @@ class SourceCronCommand extends ContainerAwareCommand
         return 0;
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
-    function updateCron(OutputInterface $output) {
+    protected function updateCron(OutputInterface $output) {
         self::log($output, 'info', 'SourceCronCommand.php\updateCron() - Update crontab for all sources');
         self::runSystemProcess($output, 'SourceCronCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
     }
 
-    function runSystemProcess(OutputInterface $output, $message, $command) {
+    protected function runSystemProcess(OutputInterface $output, $message, $command) {
         self::log($output, 'info', $message . 'Running command: ' . $command);
         $createConfiguration = new Process($command);
         $createConfiguration->run();

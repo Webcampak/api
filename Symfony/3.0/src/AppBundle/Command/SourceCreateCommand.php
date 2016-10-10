@@ -77,11 +77,11 @@ class SourceCreateCommand extends ContainerAwareCommand
         }
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
-    function deleteExistingSource(OutputInterface $output, $sourceId) {
+    protected function deleteExistingSource(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceCreateCommand.php\checkSourceExists() - Delete existing source directory');
         $sourcesDirectory = $this->getContainer()->getParameter('dir_sources');
         $fs = new Filesystem();
@@ -93,7 +93,7 @@ class SourceCreateCommand extends ContainerAwareCommand
         }
     }
 
-    function checkSourceExists(OutputInterface $output, $sourceId) {
+    protected function checkSourceExists(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceCreateCommand.php\checkSourceExists() - Checking if source already exists');
 
         $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
@@ -169,7 +169,7 @@ class SourceCreateCommand extends ContainerAwareCommand
         return false;
     }
 
-    function prepareConfigurationYaml(OutputInterface $output, $configFileSource, $configFileOutput) {
+    protected function prepareConfigurationYaml(OutputInterface $output, $configFileSource, $configFileOutput) {
         self::log($output, 'info', 'SourceCreateCommand.php\prepareConfiguration() - Prepare webcampak YAML Configuration');
         $sysConfigDirectory = $this->getContainer()->getParameter('sys_config');
         $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
@@ -215,9 +215,9 @@ class SourceCreateCommand extends ContainerAwareCommand
             self::log($output, 'error', 'SourceCreateCommand.php\prepareConfiguration() - Unable to find configuration file: ' . $sysConfigDirectory . '_test-config-source.json');
             return false;
         }
-    }    
-    
-    function prepareConfiguration(OutputInterface $output, $configFileSource, $configFileOutput) {
+    }
+
+    protected function prepareConfiguration(OutputInterface $output, $configFileSource, $configFileOutput) {
         self::log($output, 'info', 'SourceCreateCommand.php\prepareConfiguration() - Prepare webcampak Configuration');
         $sysConfigDirectory = $this->getContainer()->getParameter('sys_config');
         $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
@@ -268,7 +268,7 @@ class SourceCreateCommand extends ContainerAwareCommand
         }
     }
 
-    function createSourceDirectories(OutputInterface $output, $sourceId) {
+    protected function createSourceDirectories(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceCreateCommand.php\createDirectories() - Create Source Directories');
         $wpakSourcesDirectory = $this->getContainer()->getParameter('dir_sources');
 
@@ -290,17 +290,17 @@ class SourceCreateCommand extends ContainerAwareCommand
 
     }
 
-    function updateFtpAccounts(OutputInterface $output, $sourceId) {
+    protected function updateFtpAccounts(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceCreateCommand.php\updateFtpAccounts() - Update FTP accounts');
         self::runSystemProcess($output, 'SourceCreateCommand.php\updateFtpAccounts() - ', "sudo /usr/local/bin/webcampak system ftp");
     }
 
-    function updateCron(OutputInterface $output) {
+    protected function updateCron(OutputInterface $output) {
         self::log($output, 'info', 'SourceCronCommand.php\updateCron() - Update crontab for all sources');
         self::runSystemProcess($output, 'SourceCreateCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
     }
 
-    function runSystemProcess(OutputInterface $output, $message, $command) {
+    protected function runSystemProcess(OutputInterface $output, $message, $command) {
         self::log($output, 'info', $message . 'Running command: ' . $command);
         $createConfiguration = new Process($command);
         $createConfiguration->run();

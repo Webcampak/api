@@ -64,18 +64,18 @@ class SourceDeleteCommand extends ContainerAwareCommand
         return 0;
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
-    function moveSourceContent(OutputInterface $output, $sourceId, $targetDirectory) {
+    protected function moveSourceContent(OutputInterface $output, $sourceId, $targetDirectory) {
         self::log($output, 'info', 'SourceDeleteCommand.php\moveSourceContent() - Move source directory to backup location');
         $sourcesDirectory = $this->getContainer()->getParameter('dir_sources');
         
         self::moveFile($output, $sourcesDirectory . 'source' . $sourceId, $targetDirectory . 'contents');
     }
 
-    function moveSourceConfiguration(OutputInterface $output, $sourceId, $targetDirectory) {
+    protected function moveSourceConfiguration(OutputInterface $output, $sourceId, $targetDirectory) {
         self::log($output, 'info', 'SourceDeleteCommand.php\moveSourceConfiguration() - Move source configuration to backup location');
         $etcDirectory = $this->getContainer()->getParameter('dir_etc');
 
@@ -86,12 +86,12 @@ class SourceDeleteCommand extends ContainerAwareCommand
         self::moveFile($output, $etcDirectory . 'config-source' . $sourceId . '-ftpservers.cfg',     $targetDirectory . 'etc/' . 'config-source' . $sourceId . '-ftpservers.cfg');
     }
 
-    function moveSourceLogs(OutputInterface $output, $sourceId, $targetDirectory) {
+    protected function moveSourceLogs(OutputInterface $output, $sourceId, $targetDirectory) {
         self::log($output, 'info', 'SourceDeleteCommand.php\moveSourceConfiguration() - Move source logs to backup location');
 
     }
 
-    function moveFile($output, $sourceFile, $destinationFile) {
+    protected function moveFile($output, $sourceFile, $destinationFile) {
         $fs = new Filesystem();
         if ($fs->exists($sourceFile)) {
             $fs->rename($sourceFile, $destinationFile);
@@ -101,17 +101,17 @@ class SourceDeleteCommand extends ContainerAwareCommand
         }
     }
 
-    function updateCron(OutputInterface $output) {
+    protected function updateCron(OutputInterface $output) {
         self::log($output, 'info', 'SourceDeleteCommand.php\updateCron() - Update crontab for all sources');
         self::runSystemProcess($output, 'SourceDeleteCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
     }
 
-    function updateFtpAccounts(OutputInterface $output) {
+    protected function updateFtpAccounts(OutputInterface $output) {
         self::log($output, 'info', 'SourceDeleteCommand.php\updateFtpAccounts() - Update FTP accounts');
         self::runSystemProcess($output, 'SourceDeleteCommand.php\updateFtpAccounts() - ', "sudo /usr/local/bin/webcampak system ftp");
     }
 
-    function runSystemProcess(OutputInterface $output, $message, $command) {
+    protected function runSystemProcess(OutputInterface $output, $message, $command) {
         self::log($output, 'info', $message . 'Running command: ' . $command);
         $createConfiguration = new Process($command);
         $createConfiguration->run();

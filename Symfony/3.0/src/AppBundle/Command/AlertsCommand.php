@@ -31,7 +31,7 @@ class AlertsCommand extends ContainerAwareCommand
         ;
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
         
@@ -124,7 +124,7 @@ class AlertsCommand extends ContainerAwareCommand
                         
     }
 
-    function processUSerAlerts(OutputInterface $output, $sourceAlerts) {
+    protected function processUSerAlerts(OutputInterface $output, $sourceAlerts) {
         self::log($output, 'info', 'AlertsCommand.php\processUSerAlerts()');
         $users = $this->getContainer()->get('app.svc.alerts')->getUsersSourcesWithAlertsFlag();        
         foreach($users as $currentUserSource) {
@@ -174,7 +174,7 @@ class AlertsCommand extends ContainerAwareCommand
         }         
     }
     
-    function checkPreviousStatus(OutputInterface $output, $alertsFile) {
+    protected function checkPreviousStatus(OutputInterface $output, $alertsFile) {
         self::log($output, 'info', 'AlertsCommand.php\checkPreviousStatus()');
         if (!is_file($alertsFile)) {
             return null;            
@@ -194,7 +194,7 @@ class AlertsCommand extends ContainerAwareCommand
         }        
     }
     
-    function sendIncidentEmail(OutputInterface $output, $incidentArray, $userEmail, $sourceName, $incidentsFile) {
+    protected function sendIncidentEmail(OutputInterface $output, $incidentArray, $userEmail, $sourceName, $incidentsFile) {
         self::log($output, 'info', 'AlertsCommand.php\sendIncidentEmail()');
 
         $sourceLocale = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-source' . $incidentArray['sourceid'] . '.cfg', 'cfgsourcelanguage');
@@ -242,7 +242,7 @@ class AlertsCommand extends ContainerAwareCommand
         file_put_contents($incidentsFile, json_encode($incidentEmailLog) . "\n", FILE_APPEND);        
     }
     
-    function sendRecoveryEmail(OutputInterface $output, $incidentArray, $userEmail, $sourceName, $incidentsFile) {
+    protected function sendRecoveryEmail(OutputInterface $output, $incidentArray, $userEmail, $sourceName, $incidentsFile) {
         self::log($output, 'info', 'AlertsCommand.php\sendRecoveryEmail()');
 
         $sourceLocale = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-source' . $incidentArray['sourceid'] . '.cfg', 'cfgsourcelanguage');
@@ -279,7 +279,7 @@ class AlertsCommand extends ContainerAwareCommand
         $this->getContainer()->get('app.svc.emails')->prepareEmailForQueue($emailsParams);
     }    
     
-    function countNumberSourcesErrors(OutputInterface $output, $userSources, $sourceAlerts) {
+    protected function countNumberSourcesErrors(OutputInterface $output, $userSources, $sourceAlerts) {
         self::log($output, 'info', 'AlertsCommand.php\countNumberSourcesErrors()');                
         $errorCount = 0;
         foreach ($sourceAlerts as $alert) {

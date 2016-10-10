@@ -46,16 +46,16 @@ class GphotoCommand extends ContainerAwareCommand
         return 0;
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
-    function assignOwner(OutputInterface $output, $gphotoPort, $gphotoOwner) {
+    protected function assignOwner(OutputInterface $output, $gphotoPort, $gphotoOwner) {
         self::log($output, 'info', 'GphotoCommand.php\assignOwner() - Assign Owner to Gphoto-connected camera');
         self::runSystemProcess($output, 'GphotoCommand.php\assignOwner() - ', "gphoto2 -v --port " . $gphotoPort . " --set-config /main/settings/ownername=" . $gphotoOwner);
     }
 
-    function runSystemProcess(OutputInterface $output, $message, $command) {
+    protected function runSystemProcess(OutputInterface $output, $message, $command) {
         self::log($output, 'info', $message . 'Running command: ' . $command);
         $createConfiguration = new Process($command);
         $createConfiguration->run();

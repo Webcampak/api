@@ -33,7 +33,7 @@ class DailyReportCommand extends ContainerAwareCommand
         ;
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
         
@@ -70,7 +70,7 @@ class DailyReportCommand extends ContainerAwareCommand
         }                       
     }
 
-    function generateReports(OutputInterface $output, $reportDay) {
+    protected function generateReports(OutputInterface $output, $reportDay) {
         self::log($output, 'info', 'DailyReportCommand.php\generateReports()');
         
         // Array to be used when sending emails to users
@@ -143,8 +143,8 @@ class DailyReportCommand extends ContainerAwareCommand
         } 
         return $sourceDailyReport;
     }
-    
-    function parseReports(OutputInterface $output, $sourceDailyReport) {
+
+    protected function parseReports(OutputInterface $output, $sourceDailyReport) {
         self::log($output, 'info', 'DailyReportCommand.php\parseReports()');
         $users = $this->getContainer()->get('app.svc.alerts')->getSingleUsersSourcesWithAlertsFlag();        
         foreach($users as $currentUser) {
@@ -169,7 +169,7 @@ class DailyReportCommand extends ContainerAwareCommand
         }            
     }
 
-    function getOverallReportScore(OutputInterface $output, $emailReportArray) {
+    protected function getOverallReportScore(OutputInterface $output, $emailReportArray) {
         self::log($output, 'info', 'AlertsCommand.php\getOverallReportScore()');
         $scoreArray = array();
         foreach($emailReportArray as $report) {
@@ -183,9 +183,9 @@ class DailyReportCommand extends ContainerAwareCommand
             return '-';
         }
     }
-    
-    
-    function sendReportEmail(OutputInterface $output, $emailReportArray, $currentUser) {
+
+
+    protected function sendReportEmail(OutputInterface $output, $emailReportArray, $currentUser) {
         self::log($output, 'info', 'AlertsCommand.php\sendReportEmail()');
 
         self::log($output, 'info', 'AlertsCommand.php\sendReportEmail() - serialize: ' . serialize($emailReportArray));
@@ -220,9 +220,9 @@ class DailyReportCommand extends ContainerAwareCommand
         );
         
         $this->getContainer()->get('app.svc.emails')->prepareEmailForQueue($emailsParams);
-    }    
+    }
 
-    function processSchedule(OutputInterface $output, $currentDayOfWeek, $currentDateYmd, $capturedJpgs, $capturedRaws, $scheduleArray, $sourceProcessRaw) {
+    protected function processSchedule(OutputInterface $output, $currentDayOfWeek, $currentDateYmd, $capturedJpgs, $capturedRaws, $scheduleArray, $sourceProcessRaw) {
         self::log($output, 'info', 'DailyReportCommand.php\processSchedule()');                
         $totalPlannedCapturedInSchedule = 0;
         $jpgCaptureMissingAtScheduleCount = 0;
@@ -304,8 +304,8 @@ class DailyReportCommand extends ContainerAwareCommand
                 ));
         
     }
-    
-    function compareCapturedReportWithCaptureSchedule(OutputInterface $output, $capturedJpgs, $capturedRaws, $scheduleArray, \DateTime $reportDay, $sourceProcessRaw) {
+
+    protected function compareCapturedReportWithCaptureSchedule(OutputInterface $output, $capturedJpgs, $capturedRaws, $scheduleArray, \DateTime $reportDay, $sourceProcessRaw) {
         self::log($output, 'info', 'DailyReportCommand.php\compareCapturedReportWithCaptureSchedule()');        
         $currentDayOfWeek = $reportDay->format('N');        
         $currentDateYmd = $reportDay->format('Ymd');        
@@ -325,9 +325,9 @@ class DailyReportCommand extends ContainerAwareCommand
             )
         );   
         return $report;
-    }    
+    }
 
-    function getPictureCount(OutputInterface $output, $scheduleArray, $currentDayOfWeek, $capturedPictures) {
+    protected function getPictureCount(OutputInterface $output, $scheduleArray, $currentDayOfWeek, $capturedPictures) {
         $picturesOutsideScheduleCount = 0;
         $picturesCount = 0;
         $picturesSize = 0;

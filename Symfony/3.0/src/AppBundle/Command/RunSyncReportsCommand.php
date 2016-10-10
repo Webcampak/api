@@ -42,7 +42,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         ;
     }
 
-    function log($level, $message) {
+    protected function log($level, $message) {
         $this->output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
         
@@ -106,7 +106,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                         
     }
 
-    function processLog($file, $logMessage) {
+    protected function processLog($file, $logMessage) {
         self::log('info', 'AlertsCommand.php\processLog() - ' . $logMessage);
 
         $fs = new Filesystem();                
@@ -120,8 +120,8 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         
         $fs->dumpFile($file, json_encode($this->reportContent, JSON_PRETTY_PRINT));
     }
-    
-    function queueXferFiles($currentFileDir, $currentFileName) {
+
+    protected function queueXferFiles($currentFileDir, $currentFileName) {
         self::log('info', 'AlertsCommand.php\queueXferFiles()');
         if (isset($this->reportContent['result']['destination']['missing']['list']) && count($this->reportContent['result']['destination']['missing']['list']) > 0) {
             self::log('info', 'AlertsCommand.php\queueXferFiles(): Number of files to queue for transfer: ' . count($this->reportContent['result']['destination']['missing']['list']));
@@ -189,8 +189,8 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         }
         
     }
-    
-    function processReport($currentFileDir, $currentFileName) {
+
+    protected function processReport($currentFileDir, $currentFileName) {
         self::log('info', 'AlertsCommand.php\processReport()');
 
         //1- Add source files
@@ -236,7 +236,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                 
     }
 
-    function summarizeFileList($fileList) {
+    protected function summarizeFileList($fileList) {
         self::log('info', 'summarizeFileList');
         $summary = array('count' => array('jpg' => 0, 'raw' => 0, 'total' => 0), 'size' => array('jpg' => 0, 'raw' => 0, 'total' => 0));        
         foreach($fileList as $currentFile) {
@@ -252,7 +252,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         return $summary;
     }
 
-    function runFtpDu($sourceId, $serverId, $duDirectory) {
+    protected function runFtpDu($sourceId, $serverId, $duDirectory) {
         self::log('info', 'runFtpDu(): Running du -a -b via lftp');
         $ftpConfigFile = $this->getContainer()->getParameter('dir_etc') . 'config-source' . $sourceId . '-ftpservers.cfg';
         $ftpServersFromConfigFile = $this->getContainer()->get('app.svc.ftp')->getServersFromConfigFile($ftpConfigFile);
@@ -288,9 +288,9 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             return false;
         } 
         return $this->duParsedOutput;
-    }    
-    
-    function runFilesystemDu($sourceId, $duDirectory) {
+    }
+
+    protected function runFilesystemDu($sourceId, $duDirectory) {
         $fullDuDirectoryPath = $this->getContainer()->getParameter('dir_sources') . 'source' . intval($sourceId) . '/' . $duDirectory;
         $sourcePath = $this->getContainer()->getParameter('dir_sources') . 'source' . intval($sourceId) . '/';
         self::log('info', 'Running command: du -b -a ' . $fullDuDirectoryPath);
@@ -317,8 +317,8 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         } 
         return $duParsedOutput;
     }
-    
-    function parseDuLine($duLine, $duDirectory) {
+
+    protected function parseDuLine($duLine, $duDirectory) {
         self::log('info', 'Du line: ' . $duLine);        
         $reFileSize='(\\d+)';               # Integer Number 1
         $reSpace='.*?';                     # Non-greedy match on filler

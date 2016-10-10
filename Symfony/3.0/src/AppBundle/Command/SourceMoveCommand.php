@@ -53,18 +53,18 @@ class SourceMoveCommand extends ContainerAwareCommand
         }
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
-    function moveSourceContent(OutputInterface $output, $srcId, $dstId) {
+    protected function moveSourceContent(OutputInterface $output, $srcId, $dstId) {
         self::log($output, 'info', 'SourceMoveCommand.php\moveSourceContent() - Move source directory to backup location');
         $sourcesDirectory = $this->getContainer()->getParameter('dir_sources');
 
         self::moveFile($output, $sourcesDirectory . 'source' . $srcId, $sourcesDirectory . 'source' . $dstId);
     }
 
-    function moveSourceConfiguration(OutputInterface $output, $srcId, $dstId) {
+    protected function moveSourceConfiguration(OutputInterface $output, $srcId, $dstId) {
         self::log($output, 'info', 'SourceMoveCommand.php\moveSourceConfiguration() - Move source configuration to backup location');
         $etcDirectory = $this->getContainer()->getParameter('dir_etc');
 
@@ -75,12 +75,12 @@ class SourceMoveCommand extends ContainerAwareCommand
         self::moveFile($output, $etcDirectory . 'config-source' . $srcId . '-ftpservers.cfg',     $etcDirectory . 'config-source' . $dstId . '-ftpservers.cfg');
     }
 
-    function moveSourceLogs(OutputInterface $output, $sourceId) {
+    protected function moveSourceLogs(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceMoveCommand.php\moveSourceConfiguration() - Move source logs to backup location');
 
     }
 
-    function moveFile($output, $sourceFile, $destinationFile) {
+    protected function moveFile($output, $sourceFile, $destinationFile) {
         $fs = new Filesystem();
         if ($fs->exists($sourceFile)) {
             $fs->rename($sourceFile, $destinationFile);
@@ -90,7 +90,7 @@ class SourceMoveCommand extends ContainerAwareCommand
         }
     }
 
-    function checkSourceExists(OutputInterface $output, $sourceId) {
+    protected function checkSourceExists(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceMoveCommand.php\checkSourceExists() - Checking if source already exists');
 
         $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
@@ -167,17 +167,17 @@ class SourceMoveCommand extends ContainerAwareCommand
         return false;
     }
 
-    function updateCron(OutputInterface $output) {
+    protected function updateCron(OutputInterface $output) {
         self::log($output, 'info', 'SourceMoveCommand.php\updateCron() - Update crontab for all sources');
         self::runSystemProcess($output, 'SourceMoveCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
     }
 
-    function updateFtpAccounts(OutputInterface $output) {
+    protected function updateFtpAccounts(OutputInterface $output) {
         self::log($output, 'info', 'SourceMoveCommand.php\updateFtpAccounts() - Update FTP accounts');
         self::runSystemProcess($output, 'SourceMoveCommand.php\updateFtpAccounts() - ', "sudo /usr/local/bin/webcampak system ftp");
     }
 
-    function runSystemProcess(OutputInterface $output, $message, $command) {
+    protected function runSystemProcess(OutputInterface $output, $message, $command) {
         self::log($output, 'info', $message . 'Running command: ' . $command);
         $createConfiguration = new Process($command);
         $createConfiguration->run();

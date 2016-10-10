@@ -40,16 +40,16 @@ class SourceFTPCommand extends ContainerAwareCommand
         return 0;
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
-    function updateFTP(OutputInterface $output) {
+    protected function updateFTP(OutputInterface $output) {
         self::log($output, 'info', 'SourceFTPCommand.php\updateFTP() - Update ftp for all sources');
         self::runSystemProcess($output, 'SourceFTPCommand.php\updateFTP() - ', "sudo /usr/local/bin/webcampak system ftp");
     }
 
-    function runSystemProcess(OutputInterface $output, $message, $command) {
+    protected function runSystemProcess(OutputInterface $output, $message, $command) {
         self::log($output, 'info', $message . 'Running command: ' . $command);
         $createConfiguration = new Process($command);
         $createConfiguration->run();

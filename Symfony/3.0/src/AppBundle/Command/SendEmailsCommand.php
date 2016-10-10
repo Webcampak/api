@@ -36,7 +36,7 @@ class SendEmailsCommand extends ContainerAwareCommand
         ;
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
         
@@ -113,7 +113,7 @@ class SendEmailsCommand extends ContainerAwareCommand
         }
     }
 
-    function processLog(OutputInterface $output, $emailContent, $file, $tz, $logMessage) {
+    protected function processLog(OutputInterface $output, $emailContent, $file, $tz, $logMessage) {
         self::log($output, 'info', 'AlertsCommand.php\processLog() - ' . $logMessage);
 
         $fs = new Filesystem();                
@@ -128,8 +128,8 @@ class SendEmailsCommand extends ContainerAwareCommand
         $fs->dumpFile($file, json_encode($emailContent));
         return $emailContent;
     }
-    
-    function processEmail(OutputInterface $output, $emailContent, $currentFileDir, $currentFileName, $serverTimezone) {
+
+    protected function processEmail(OutputInterface $output, $emailContent, $currentFileDir, $currentFileName, $serverTimezone) {
         self::log($output, 'info', 'AlertsCommand.php\sendEmail()');
         $fs = new Filesystem();
         
@@ -273,6 +273,5 @@ class SendEmailsCommand extends ContainerAwareCommand
                
     }
 
-    
 }
 

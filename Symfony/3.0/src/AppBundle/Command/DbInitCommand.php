@@ -178,12 +178,11 @@ class DbInitCommand extends ContainerAwareCommand
 
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
-
-    function createApplications(OutputInterface $output) {
+    protected function createApplications(OutputInterface $output) {
         self::log($output, 'comment', '*********');
         self::log($output, 'info', 'DbInitCommand.php\createApplications() - Adding Applications to Database');
         $em = $this->getContainer()->get('doctrine')->getManager();
@@ -213,7 +212,7 @@ class DbInitCommand extends ContainerAwareCommand
         $em->flush();
     }
 
-    function createPermissions(OutputInterface $output) {
+    protected function createPermissions(OutputInterface $output) {
         self::log($output, 'comment', '*********');
         self::log($output, 'info', 'DbInitCommand.php\createPermissions() - Adding Permissions to Database');
         $em = $this->getContainer()->get('doctrine')->getManager();
@@ -241,7 +240,7 @@ class DbInitCommand extends ContainerAwareCommand
         $em->flush();
     }
 
-    function createGroups(OutputInterface $output) {
+    protected function createGroups(OutputInterface $output) {
         self::log($output, 'comment', '*********');
         self::log($output, 'info', 'DbInitCommand.php\createGroups() - Adding Groups to Database');
         $em = $this->getContainer()->get('doctrine')->getManager();
@@ -314,7 +313,7 @@ class DbInitCommand extends ContainerAwareCommand
         $em->flush();
     }
 
-    function createRootUser(OutputInterface $output) {
+    protected function createRootUser(OutputInterface $output) {
         self::log($output, 'comment', '*********');
         self::log($output, 'info', 'DbInitCommand.php\createRootUser() - Create Root User');
         $em = $this->getContainer()->get('doctrine')->getManager();
@@ -357,8 +356,8 @@ class DbInitCommand extends ContainerAwareCommand
             $this->getContainer()->get('doctrine')->getManager()->flush();
         }
     }
-    
-    function createSources(OutputInterface $output, $sourceId, $sourceName) {
+
+    protected function createSources(OutputInterface $output, $sourceId, $sourceName) {
         self::log($output, 'comment', '*********');
         self::log($output, 'info', 'DbInitCommand.php\createSources() - Create Source: ' . $sourceId . ' - ' . $sourceName);
         

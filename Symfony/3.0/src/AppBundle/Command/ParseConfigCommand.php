@@ -37,12 +37,12 @@ class ParseConfigCommand extends ContainerAwareCommand
         self::parseConfig($output);
     }
 
-    function log(OutputInterface $output, $level, $message) {
+    protected function log(OutputInterface $output, $level, $message) {
         $output->writeln('<' . $level . '>' .  date('m/d/Y h:i:s a', time()) . ' | ' . $message . '</' . $level . '>');
     }
 
 
-    function parseConfig(OutputInterface $output) {
+    protected function parseConfig(OutputInterface $output) {
         self::log($output, 'comment', '*********');
         self::log($output, 'info', 'ParseConfigCommand.php\parseConfig() - Starting to parse config');
 
