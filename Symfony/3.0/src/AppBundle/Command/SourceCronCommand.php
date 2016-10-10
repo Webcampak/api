@@ -46,10 +46,6 @@ class SourceCronCommand extends ContainerAwareCommand
 
     function updateCron(OutputInterface $output) {
         self::log($output, 'info', 'SourceCronCommand.php\updateCron() - Update crontab for all sources');
-        $wpakConfigDirectory = $this->getContainer()->getParameter('dir_etc');
-        $wpakBinDirectory = $this->getContainer()->getParameter('dir_bin');
-
-//        self::runSystemProcess($output, 'SourceCronCommand.php\updateCron() - ', "python " . $wpakBinDirectory . "wpak-cronupdatefile.py -g " . $wpakConfigDirectory . "config-general.cfg");
         self::runSystemProcess($output, 'SourceCronCommand.php\updateCron() - ', "/usr/local/bin/webcampak system cron");
     }
 
