@@ -13,7 +13,7 @@ if ($app->getEnvironment() == 'dev') {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Webcampak 3.0 Desktop</title>
+    <title>(<?php echo gethostname(); ?>) Webcampak 3.0 Desktop</title>
 
     <link rel="icon" type="image/ico" href="../../../resources/images/favicon.ico">
 
