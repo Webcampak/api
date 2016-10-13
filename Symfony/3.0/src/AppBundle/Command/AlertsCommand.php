@@ -160,7 +160,7 @@ class AlertsCommand extends ContainerAwareCommand
                             if ($diffInMinutes >= $sourceAlerts[$currentSourceId]['sendReminderAfter'] &&  intval($sourceAlerts[$currentSourceId]['sendReminderAfter']) > 0) {
                                 self::sendIncidentEmail($output, $sourceAlerts[$currentSourceId],  $currentUserSource['EMAIL'], $currentUserSource['SOURCENAME'], $incidentsFile);                                
                             } else {
-                                self::log($output, 'info', 'AlertsCommand.php\processUSerAlerts() - ' . $currentUserSource['EMAIL'] . ' - Processing source: ID: ' . $currentUserSource['SOURCEID'] . ' Not enough time since last capture, not sending reminder');                                     
+                                self::log($output, 'info', 'AlertsCommand.php\processUSerAlerts() - ' . $currentUserSource['EMAIL'] . ' - Processing source: ID: ' . $currentUserSource['SOURCEID'] . ' Not enough time since last alert, not sending reminder');
                             }
                         }
                     }
