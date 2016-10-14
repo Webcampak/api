@@ -46,19 +46,11 @@ class PicturesService
                 $tmpresults['PICTUREEXIF'] = '';
                 if (is_file($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/' . $pictureDay . '/' . $receivedPictureDate)) {
                     $tmpresults['PICTUREJPGSIZE'] = filesize($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/' . $pictureDay . '/' . $receivedPictureDate);
-                    try {
-                        $tmpresults['PICTUREEXIF'] = json_encode(exif_read_data($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/' . $pictureDay . '/' . $receivedPictureDate, 'ANY_TAG'));
-                    } catch (\RuntimeException $e) {
-                        $tmpresults['PICTUREEXIF'] = null;
-                    }
+                    $tmpresults['PICTUREEXIF'] = json_encode(@exif_read_data($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/' . $pictureDay . '/' . $receivedPictureDate, 'ANY_TAG'));
                 }
                 if (is_file($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/raw/' . $pictureDay . '/' . substr($receivedPictureDate, 0,14) . '.raw')) {
                     $tmpresults['PICTURERAWSIZE'] = filesize($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/raw/' . $pictureDay . '/' . substr($receivedPictureDate, 0,14) . '.raw');
-                    try {
-                        $tmpresults['PICTUREEXIF'] = json_encode(exif_read_data($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/raw/' . $pictureDay . '/' . substr($receivedPictureDate, 0,14) . '.raw', 'ANY_TAG'));
-                    } catch (\RuntimeException $e) {
-                        $tmpresults['PICTUREEXIF'] = null;
-                    }
+                    $tmpresults['PICTUREEXIF'] = json_encode(@exif_read_data($this->paramDirSources . 'source' . $receivedSourceid . '/pictures/raw/' . $pictureDay . '/' . substr($receivedPictureDate, 0,14) . '.raw', 'ANY_TAG'));
                 }
                 
                 //Get Picture Date
