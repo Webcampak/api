@@ -58,9 +58,10 @@ class AlertsCommand extends ContainerAwareCommand
             self::log($output, 'info', 'AlertsCommand.php\execute() ---------------------------------------------------------------------------------');                        
             self::log($output, 'info', 'AlertsCommand.php\execute() - Processing Source: ' . $sourceEntity->getSourceId());  
             $sourceHasSchedule = $this->getContainer()->get('app.svc.sources')->checkSourceScheduleExists($sourceEntity->getSourceId());
-            $sourceIsActive = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-source' . $sourceEntity->getSourceId() . '.cfg', 'cfgsourceactive');            
-            $latestPictureFile = $this->getContainer()->get('app.svc.pictures.directory')->getLatestPictureForSource($sourceEntity->getSourceId());                        
-            if ($sourceHasSchedule !== false && $sourceIsActive == 'yes' && $latestPictureFile != '') {
+            $sourceIsActive = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-source' . $sourceEntity->getSourceId() . '.cfg', 'cfgsourceactive');
+            $sourceScheduleEnable = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-source' . $sourceEntity->getSourceId() . '.cfg', 'cfgemailschedulealert');
+            $latestPictureFile = $this->getContainer()->get('app.svc.pictures.directory')->getLatestPictureForSource($sourceEntity->getSourceId());
+            if ($sourceHasSchedule !== false && $sourceIsActive == 'yes' && $sourceScheduleEnable == 'yes' && $latestPictureFile != '') {
                 self::log($output, 'info', 'AlertsCommand.php\execute() - ' . $sourceEntity->getSourceId() . ' -  Source has a schedule, is active and has previously captured pictures');            
                 
                 $sourceTimezone = $this->getContainer()->get('app.svc.configuration')->getSourceConfigurationParameterValue($this->getContainer()->getParameter('dir_etc') . 'config-source' . $sourceEntity->getSourceId() . '.cfg', 'cfgcapturetimezone');
