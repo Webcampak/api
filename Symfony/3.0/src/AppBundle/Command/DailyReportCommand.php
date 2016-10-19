@@ -223,7 +223,7 @@ class DailyReportCommand extends ContainerAwareCommand
     }
 
     protected function processSchedule(OutputInterface $output, $currentDayOfWeek, $currentDateYmd, $capturedJpgs, $capturedRaws, $scheduleArray, $sourceProcessRaw) {
-        self::log($output, 'info', 'DailyReportCommand.php\processSchedule()');                
+        self::log($output, 'info', 'DailyReportCommand.php\processSchedule()');
         $totalPlannedCapturedInSchedule = 0;
         $jpgCaptureMissingAtScheduleCount = 0;
         $jpgCaptureInScheduleCount = 0;
