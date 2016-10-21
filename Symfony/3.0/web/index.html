@@ -1,73 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <title id="page-title">Webcampak Interface</title>
-
-   <style type="text/css">
-      html {
-         background: url("/resources/images/webcampak-logo.png") center center no-repeat fixed rgb(116, 206, 152);
-      }
-      #buttonbox {
-         margin: 10px;
-         padding: 10px;
-         -webkit-border-radius: 4px;
-         color: #314E64;
-         background: #f8f8f8;
-         width: 230px;
-      }
-      #warningbox {
-         margin: 10px;
-         padding: 10px;
-         -webkit-border-radius: 4px;
-         color: #f8f8f8;
-         background: #d50000;
-         width: 750px;
-      }
-      #compatibility {
-         margin: 10px;
-         padding: 10px;
-         -webkit-border-radius: 4px;
-         color: #314E64;
-         width: 230px;
-      }
-      #information {
-         margin: 10px;
-         padding: 10px;
-         -webkit-border-radius: 4px;
-         color: #314E64;
-         background: #f8f8f8;
-         width: 600px;
-      }
-   </style>
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <title id="page-title">Webcampak Interface</title>
+    <link rel="stylesheet" href="/resources/lib/css/landing/coffeegrinder.min.css">
+    <link rel="stylesheet" href="/resources/lib/css/landing/wireframe-theme.min.css">
+    <script>document.createElement( "picture" );</script>
+    <script src="/resources/lib/js/picturefill/picturefill.min.js" class="picturefill" async="async"></script>
+    <link rel="stylesheet" href="/resources/lib/css/landing/main.css">
 </head>
+<body class="grid-1">
+<header class="row">
+    <header class="coffee-span-12 hero-column">
+        <div class="responsive-picture hero-image">
+            <picture><img alt="Placeholder Picture" srcset="/resources/images/wpak-landing-a.soria.jpg">
+            </picture>
+        </div>
+    </header>
+</header>
+<main class="row">
+    <div class="coffee-span-12">
+        <h4 class="sub-title"><a href="http://www.webcampak.com"><img src="/resources/images/webcampak-logo.png" border="0" /></a></h4>
+    </div>
+</main>
+<main class="row travel-impressions">
+    <div class="coffee-span-4 coffee-558-span-6 coffee-419-span-12">
+        <a href="/app.php/desktop">
+        <div class="responsive-picture travel-image">
+            <picture><img alt="Desktop Picture" src="/resources/images/imac.png" />
+            </picture>
+        </div>
+        <h6 class="travel-heading">Desktop</h6>
+        </a>
+    </div>
+    <div class="coffee-span-4 coffee-558-span-6 coffee-419-span-12">
+        <a href="/app.php/desktop">
+        <div class="responsive-picture travel-image">
+            <a href="/dashboard.php/dashboard">
+            <picture><img alt="Desktop Picture" src="/resources/images/ipad.png" />
+            </picture>
+            </a>
+        </div>
+        <h6 class="travel-heading">Dashboard</h6>
+        </a>
+    </div>
+    <div class="coffee-span-4 coffee-558-span-12">
+        <div class="responsive-picture travel-image">
+            <picture><img alt="Desktop Picture" src="/resources/images/smartphone.png" />
+            </picture>
+        </div>
+        <h6 class="travel-heading">Mobile (soon)</h6>
+    </div>
+</main>
+<br /><br />
+<div style="position:absolute;bottom:0;font-size: small">
+    Banner by Webcampak for A. Soria (Canon 5D MII) -
+    Icons made by <a href="http://www.flaticon.com/authors/madebyoliver" title="Madebyoliver">Madebyoliver</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+</body>
 
-<body>
-<div>
-   <table width="100%" border="0" align="center">
-      <!--[if lt IE 9]>
-      <tr valign="top"><td colspan="3" align="center">
-         <div id="warningbox">
-            <b>Attention ! </b> <br />
-            Votre version d'Internet Explorer ne vous permet pas d'utiliser l'application Webcampak dans des conditions optimales. <br />
-            Mettez à jour votre navigateur (<a href="http://www.microsoft.com/windows/internet-explorer/">Microsoft.com</a>) ou installez un navigateur compatible.
-            <br /><br />
-            <b>Warning ! </b> <br />
-            Your version of Internet Explorer is too old for Webcampak software. <br />
-            Please update your browser (<a href="http://www.microsoft.com/windows/internet-explorer/">Microsoft.com</a>) or install a compliant browser (see below).
-         </div>
-      </td></tr>
-
-      <![endif]-->
-      <tr valign="top">
-         <td align="center">
-            <div id="buttonbox"><a href="/app.php/desktop"><img src="/resources/images/desktop92x92.png" border="0" /><br />Web</a></div>
-         </td>
-         <td align="center">
-            <div id="buttonbox"><a href="/dashboard.php/dashboard"><img src="/resources/images/pda92x92.png" border="0" /><br />Dashboard</a></div>
-         </td>
-         <br /><br />
-      </tr>
-   </table>
-</div>
+</html>
