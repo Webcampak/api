@@ -56,7 +56,25 @@ class UserService
         }        
         return $userApplications;
     }
-   
+
+    public function testUserApplication(Users $userEntity, $applicationCode) {
+        $this->logger->info('AppBundle\Services\UserService\testUserApplication()');
+        $sqlQuery = "SELECT APP.CODE NAME
+                     FROM GROUPS_APPLICATIONS GROAPP
+                     LEFT JOIN APPLICATIONS APP ON APP.APP_ID = GROAPP.APP_ID
+                     WHERE GROAPP.GRO_ID = :receivedGroId AND APP.CODE = :applicationCode
+                     ORDER BY APP.CODE";
+        $userApplicationsDbResults = $this->doctrine
+            ->getManager()
+            ->getConnection()
+            ->fetchAll($sqlQuery, array('receivedGroId' => $userEntity->getGro()->getGroId(), 'applicationCode' => $applicationCode));
+        if (count($userApplicationsDbResults) === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function getCurrentSourcesByUseId($useId) {
         $this->logger->info('AppBundle\Services\UserService\getUserSources()');
         $sqlQuery = "
@@ -164,6 +182,21 @@ class UserService
         }
         $this->logger->info('AppBundle\Services\UserService\isMethodAllowed() - Return: ' . var_export($isAllowed, true));
         return $isAllowed;
+    }
+
+    public function isApplicationAllowed($application) {
+        //In this function we test if a user is allowed to access a particular application
+        $this->logger->info('AppBundle\Services\UserService\isApplicationAllowed() - Start');
+        $this->logger->info('AppBundle\Services\UserService\isMethodAllowed() - Tested Applications: ' . $application);
+
+        $isAllowed = false;
+        //By default root is allowed to access all actions and methods
+        if (is_a($this->currentUserEntity, 'AppBundle\Entities\Database\Users') && $this->currentUserEntity->getUsername() == 'root') {
+            $this->logger->info('AppBundle\Services\UserService\isMethodAllowed() - User is root, granting access to method');
+            return true;
+        } else if (is_a($this->currentUserEntity, 'AppBundle\Entities\Database\Users')) {
+            return self::testUserApplication($this->currentUserEntity, $application);
+        }
     }
 
     public function getSettings(Users $userEntity) {
