@@ -189,7 +189,6 @@ class UserService
         $this->logger->info('AppBundle\Services\UserService\isApplicationAllowed() - Start');
         $this->logger->info('AppBundle\Services\UserService\isMethodAllowed() - Tested Applications: ' . $application);
 
-        $isAllowed = false;
         //By default root is allowed to access all actions and methods
         if (is_a($this->currentUserEntity, 'AppBundle\Entities\Database\Users') && $this->currentUserEntity->getUsername() == 'root') {
             $this->logger->info('AppBundle\Services\UserService\isMethodAllowed() - User is root, granting access to method');
