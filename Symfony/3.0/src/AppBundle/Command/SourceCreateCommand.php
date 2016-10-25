@@ -287,7 +287,7 @@ class SourceCreateCommand extends ContainerAwareCommand
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/reports", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/capture", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/sync-reports", 0700);
-        $fs->chmod($wpakSourcesDirectory . "source" . $sourceId, 0500);
+        $fs->chmod($wpakSourcesDirectory . "source" . $sourceId, 0500, 0000, false);
     }
 
     protected function updateFtpAccounts(OutputInterface $output, $sourceId) {
