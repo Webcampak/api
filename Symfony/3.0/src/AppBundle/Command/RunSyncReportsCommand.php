@@ -260,13 +260,19 @@ class RunSyncReportsCommand extends ContainerAwareCommand
     protected function runFtpDu($sourceId, $serverId) {
         self::log('info', 'runFtpDu(): Running du -a -b via lftp');
         $ftpConfigFile = $this->getContainer()->getParameter('dir_etc') . 'config-source' . $sourceId . '-ftpservers.cfg';
+
+        $dirTmpCacheFile = tempnam($this->getContainer()->getParameter('dir_cache') . 'syncreports/', "SYN");
+
         $ftpServersFromConfigFile = $this->getContainer()->get('app.svc.ftp')->getServersFromConfigFile($ftpConfigFile);
         $ftpServer = $this->getContainer()->get('app.svc.ftp')->getFtpServerbyId($ftpServersFromConfigFile, $serverId);
         $this->ftpServer = $ftpServer;
         self::log('info', 'runFtpDu(): FTP Server: ' . $ftpServer['NAME']);
         $this->duParsedOutput = array('list' => array(), 'count' => array('jpg' => 0, 'raw' => 0, 'total' => 0), 'size' => array('jpg' => 0, 'raw' => 0, 'total' => 0));
-        $runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . ' -e "du -b -a;exit"');
-        $runSystemProcess->setTimeout(120000);
+        $runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . ' -e "du -b -a;exit" > ' . $dirTmpCacheFile);
+        $runSystemProcess->setTimeout(1200000);
+        $runSystemProcess->run();
+        //Open file
+        /*
         $runSystemProcess->run(function ($type, $buffer) {
             if (Process::ERR === $type) {
                 self::log('info', 'runFtpDu(): Error: ' . $buffer);                
@@ -287,11 +293,33 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                     }            
                 }
             }
-        });
+        });*/
         if (!$runSystemProcess->isSuccessful()) {
             self::log('error', 'Unable to perform action');
             return false;
-        } 
+        }
+        $handle = fopen($dirTmpCacheFile, "r");
+        if ($handle) {
+            while (($processLine = fgets($handle)) !== false) {
+                $duParsedLine = self::parseDuLine($processLine, './');
+                if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw') && strpos($duParsedLine['path'], 'process') === false) {
+                    $duParsedLine['path'] = substr($duParsedLine['path'], 1); #Hack: When running ftp du, remove first characted of the path, which is typically a /
+                    $currentMd5 = md5($duParsedLine['size'] . $duParsedLine['type'] . $duParsedLine['path']);
+                    $this->duParsedOutput['list'][$currentMd5] = $duParsedLine;
+                    $this->duParsedOutput['count']['total'] = $this->duParsedOutput['count']['total']+1;
+                    if ($duParsedLine['type'] === 'jpg') {$this->duParsedOutput['count']['jpg'] = $this->duParsedOutput['count']['jpg']+1;}
+                    else {$this->duParsedOutput['count']['raw'] = $this->duParsedOutput['count']['raw']+1;}
+                    $this->duParsedOutput['size']['total'] = $this->duParsedOutput['size']['total'] + $duParsedLine['size'];
+                    if ($duParsedLine['type'] === 'jpg') {$this->duParsedOutput['size']['jpg'] = $this->duParsedOutput['size']['jpg']+$duParsedLine['size'];}
+                    else {$this->duParsedOutput['size']['raw'] = $this->duParsedOutput['size']['raw']+$duParsedLine['size'];}
+                }
+            }
+            fclose($handle);
+        } else {
+            self::log('error', 'Unable to open file following lftp listing');
+            return false;
+        }
+
         return $this->duParsedOutput;
     }
 
