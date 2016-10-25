@@ -70,6 +70,7 @@ class SourceCreateCommand extends ContainerAwareCommand
             // Fix any potential permission issues by setting correct permissions
             $fs = new Filesystem(); 
             $fs->chmod($this->getContainer()->getParameter('dir_sources') . "source" . $sourceId, 0700, 0000, true);
+            $fs->chmod($this->getContainer()->getParameter('dir_sources') . "source" . $sourceId, 0500, 0000, false);
 
             return 0; // Return success
         } else {
@@ -287,7 +288,6 @@ class SourceCreateCommand extends ContainerAwareCommand
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/reports", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/capture", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/sync-reports", 0700);
-        $fs->chmod($wpakSourcesDirectory . "source" . $sourceId, 0500, 0000, false);
     }
 
     protected function updateFtpAccounts(OutputInterface $output, $sourceId) {
