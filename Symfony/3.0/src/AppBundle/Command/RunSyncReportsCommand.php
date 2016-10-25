@@ -292,14 +292,14 @@ class RunSyncReportsCommand extends ContainerAwareCommand
 
     protected function runFilesystemDu($sourceId, $duDirectory) {
         $fullDuDirectoryPath = $this->getContainer()->getParameter('dir_sources') . 'source' . intval($sourceId) . '/' . $duDirectory;
-        $sourcePath = $this->getContainer()->getParameter('dir_sources') . 'source' . intval($sourceId) . '/';
+        //$sourcePath = $this->getContainer()->getParameter('dir_sources') . 'source' . intval($sourceId) . '/';
         self::log('info', 'Running command: du -b -a ' . $fullDuDirectoryPath);
         $duParsedOutput = array('list' => array(), 'count' => array('jpg' => 0, 'raw' => 0, 'total' => 0), 'size' => array('jpg' => 0, 'raw' => 0, 'total' => 0));
         $runSystemProcess = new Process('du -b -a ' . $fullDuDirectoryPath);
         $runSystemProcess->run();
         $processOutputLines = explode("\n", $runSystemProcess->getOutput());
         foreach($processOutputLines as $processLine) {
-            $duParsedLine = self::parseDuLine($processLine, $sourcePath);
+            $duParsedLine = self::parseDuLine($processLine, $fullDuDirectoryPath);
             if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw')) {
                 $currentMd5 = md5($duParsedLine['size'] . $duParsedLine['type'] . $duParsedLine['path']);
                 $duParsedOutput['list'][$currentMd5] = $duParsedLine;
