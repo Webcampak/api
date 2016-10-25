@@ -151,23 +151,28 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                         $ftpConfigFile = $this->getContainer()->getParameter('dir_etc') . 'config-source' . $this->reportContent['job']['source']['sourceid'] . '-ftpservers.cfg';
                         $ftpServersFromConfigFile = $this->getContainer()->get('app.svc.ftp')->getServersFromConfigFile($ftpConfigFile);
                         $this->reportContent['job']['source']['ftpserverhash'] = $this->getContainer()->get('app.svc.ftp')->calculateFTPServerHash($ftpServersFromConfigFile, $this->reportContent['job']['source']['ftpserverid']);
+                        $this->reportContent['job']['source']['filepath'] = $currentMissingFile['path'];
                     } else {
                         $this->reportContent['job']['source']['ftpserverhash'] = null;
+                        $this->reportContent['job']['source']['filepath'] = "pictures/" . $currentMissingFile['path'];
                     }
                     if ($this->reportContent['job']['destination']['type'] === 'ftp') {
                         $ftpConfigFile = $this->getContainer()->getParameter('dir_etc') . 'config-source' . $this->reportContent['job']['destination']['sourceid'] . '-ftpservers.cfg';
                         $ftpServersFromConfigFile = $this->getContainer()->get('app.svc.ftp')->getServersFromConfigFile($ftpConfigFile);
                         $this->reportContent['job']['destination']['ftpserverhash'] = $this->getContainer()->get('app.svc.ftp')->calculateFTPServerHash($ftpServersFromConfigFile, $this->reportContent['job']['destination']['ftpserverid']);
+                        $this->reportContent['job']['destination']['filepath'] = $currentMissingFile['path'];
                     }  else {
                         $this->reportContent['job']['destination']['ftpserverhash'] = null;
+                        $this->reportContent['job']['destination']['filepath'] = "pictures/" . $currentMissingFile['path'];
                     }
+                    self::log('info', 'AlertsCommand.php\queueXferFiles(): Source Filepath: ' . $this->reportContent['job']['source']['filepath']);
+                    self::log('info', 'AlertsCommand.php\queueXferFiles(): Destination Filepath: ' . $this->reportContent['job']['destination']['filepath']);
+
                     $xferContent = array();
                     $xferContent['job'] = array();
                     $xferContent['job']['status'] = 'queued';
                     $xferContent['job']['source'] = $this->reportContent['job']['source'];
-                    $xferContent['job']['source']['filepath'] = $currentMissingFile['path'];
                     $xferContent['job']['destination'] = $this->reportContent['job']['destination'];
-                    $xferContent['job']['destination']['filepath'] = $currentMissingFile['path'];                    
                     $xferContent['job']['hash'] = $filenameMd5;
                     $xferContent['job']['sync-report']['filename'] = $currentFileName;
                     $xferContent['job']['sync-report']['hash'] = $this->reportContent['job']['hash'];
