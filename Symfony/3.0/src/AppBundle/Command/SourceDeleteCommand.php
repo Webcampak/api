@@ -60,7 +60,6 @@ class SourceDeleteCommand extends ContainerAwareCommand
         // Configure VSFTPD
         self::updateFtpAccounts($output);
 
-        
         return 0;
     }
 
@@ -71,7 +70,10 @@ class SourceDeleteCommand extends ContainerAwareCommand
     protected function moveSourceContent(OutputInterface $output, $sourceId, $targetDirectory) {
         self::log($output, 'info', 'SourceDeleteCommand.php\moveSourceContent() - Move source directory to backup location');
         $sourcesDirectory = $this->getContainer()->getParameter('dir_sources');
-        
+
+        $fs = new Filesystem();
+        $fs->chmod($sourcesDirectory . 'source' . $sourceId, 0700, 0000, false);
+
         self::moveFile($output, $sourcesDirectory . 'source' . $sourceId, $targetDirectory . 'contents');
     }
 
