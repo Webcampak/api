@@ -197,7 +197,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         if ($this->reportContent['job']['source']['type'] === 'filesystem') {
             $parsedDu = self::runFilesystemDu($this->reportContent['job']['source']['sourceid'], 'pictures/');            
         } else if ($this->reportContent['job']['source']['type'] === 'ftp') {
-            $parsedDu = self::runFtpDu($this->reportContent['job']['source']['sourceid'], $this->reportContent['job']['source']['ftpserverid'], 'pictures/');                        
+            $parsedDu = self::runFtpDu($this->reportContent['job']['source']['sourceid'], $this->reportContent['job']['source']['ftpserverid']);
         }
         if ($parsedDu !== false) {
             $this->reportContent['result']['source']['files'] = $parsedDu;
@@ -208,7 +208,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         if ($this->reportContent['job']['destination']['type'] === 'filesystem') {
             $parsedDu = self::runFilesystemDu($this->reportContent['job']['destination']['sourceid'], 'pictures/');            
         } else if ($this->reportContent['job']['destination']['type'] === 'ftp') {
-            $parsedDu = self::runFtpDu($this->reportContent['job']['destination']['sourceid'], $this->reportContent['job']['destination']['ftpserverid'], 'pictures/');                        
+            $parsedDu = self::runFtpDu($this->reportContent['job']['destination']['sourceid'], $this->reportContent['job']['destination']['ftpserverid']);
         }        
         if ($parsedDu !== false) {
             $this->reportContent['result']['destination']['files'] = $parsedDu;
@@ -252,7 +252,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         return $summary;
     }
 
-    protected function runFtpDu($sourceId, $serverId, $duDirectory) {
+    protected function runFtpDu($sourceId, $serverId) {
         self::log('info', 'runFtpDu(): Running du -a -b via lftp');
         $ftpConfigFile = $this->getContainer()->getParameter('dir_etc') . 'config-source' . $sourceId . '-ftpservers.cfg';
         $ftpServersFromConfigFile = $this->getContainer()->get('app.svc.ftp')->getServersFromConfigFile($ftpConfigFile);
@@ -269,7 +269,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                 $processOutputLines = explode("\n", $buffer);
                 foreach($processOutputLines as $processLine) {
                     $duParsedLine = self::parseDuLine($processLine, './');
-                    if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw')) {
+                    if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw') && strpos($duParsedLine['path'], 'process') === false) {
                         $duParsedLine['path'] = substr($duParsedLine['path'], 1); #Hack: When running ftp du, remove first characted of the path, which is typically a /
                         $currentMd5 = md5($duParsedLine['size'] . $duParsedLine['type'] . $duParsedLine['path']);
                         $this->duParsedOutput['list'][$currentMd5] = $duParsedLine;
