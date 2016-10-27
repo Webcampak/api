@@ -122,8 +122,11 @@ class SyncReportsService
             $finder->depth('== 0');
             $finder->in($searchDirectory);
             foreach ($finder as $file) {
-                array_push($reports, $file->getRealpath());
-                $this->logger->info($file->getRealpath());
+                // If exclude the details file
+                if (strpos($file->getRealpath(), 'details') === false) {
+                    array_push($reports, $file->getRealpath());
+                    $this->logger->info($file->getRealpath());
+                }
             }              
         }      
         return $reports;
