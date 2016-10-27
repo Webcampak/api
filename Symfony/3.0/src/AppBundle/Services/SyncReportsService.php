@@ -35,7 +35,7 @@ class SyncReportsService
         $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'queued/'));
         $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'process/'));
         foreach ($userSources as $userSource) {
-            $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSources . 'source' . $userSource['SOURCEID'] . '/resources/sync-reports/'));            
+            $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSources . 'source' . $userSource['SOURCEID'] . '/resources/sync-reports/'));
         }
                 
         foreach ($userReportsFiles as $reportFile) {
@@ -51,7 +51,7 @@ class SyncReportsService
                                                 
             array_push($userReports, array(
                 'NAME' => self::formatReportValue($reportContent['job']['name'])
-                , 'XFER' => false
+                , 'XFER' => $reportContent['job']['xfer']
                 , 'STATUS' => self::formatReportValue($reportContent['job']['status'])
                 , 'FILENAME' => $reportFilePathInfo['basename']
                 , 'LOGS' => json_encode(self::formatReportValue($reportContent['job']['logs']))
@@ -111,14 +111,14 @@ class SyncReportsService
         else {return '';}
     }    
     
-    public function getReports($searchDirectory) {
-        $this->logger->info('AppBundle\Services\SyncReportsService\getProcessReports()');        
+    public function getReports($searchDirectory, $reportType = '') {
+        $this->logger->info('AppBundle\Services\SyncReportsService\getReports(): directory: ' . $searchDirectory);
         $reports = array();
         if (is_dir($searchDirectory)) {
             $finder = new Finder();
             $finder->files();
             $finder->sortByName();
-            $finder->files()->name('*.jso*');
+            $finder->files()->name('*' . $reportType . '.jso*');
             $finder->depth('== 0');
             $finder->in($searchDirectory);
             foreach ($finder as $file) {   
@@ -239,7 +239,7 @@ class SyncReportsService
             $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'queued/'));
             $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'process/'));
             foreach ($userSources as $userSource) {
-                $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSources . 'source' . $userSource['SOURCEID'] . '/resources/sync-reports/'));            
+                $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSources . 'source' . $userSource['SOURCEID'] . '/resources/sync-reports/'));
             }
             foreach ($userReportsFiles as $reportFile) {
                 $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - File: ' . $reportFile);
@@ -247,6 +247,8 @@ class SyncReportsService
                 if ($inputParams['FILENAME'] === $reportFilePathInfo['basename']) {
                     $fs = new Filesystem();
                     $fs->remove($reportFile);
+                    $detailReport = str_replace(".json","details.json",$reportFile);
+                    $fs->remove($detailReport);
                     return array("success" => true, "message" => "Report deleted");
                 }
             }

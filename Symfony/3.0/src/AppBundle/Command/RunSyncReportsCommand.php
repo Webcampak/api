@@ -31,6 +31,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
 {
     private $output;
     private $reportContent;
+    private $reportContentDetails;
     private $duParsedOutput;
     private $serverTimezone;
     
@@ -73,6 +74,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             $reportFilePathInfo = pathinfo($currentReportFile);
             $currentFileDir = $reportDir . 'process/';
             $currentFileName = $reportFilePathInfo['basename'];
+            $currentFileNameDetails = str_replace(".json","details.json",$currentFileName);
             
             $this->reportContent = $this->getContainer()->get('app.svc.syncreports')->readReportFile($currentReportFile);
             $this->reportContent['job']['status'] = 'process';
@@ -96,14 +98,38 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                 self::processLog($currentFileDir . $currentFileName, 'Preparing xfer queue');                
                 self::queueXferFiles($currentFileDir, $currentFileName);                
             }
-            
+
+            self::processLog($currentFileDir . $currentFileName, 'Clearing unecessary data in preparation of saving to file');
+            //3 - Before saving the file, we drop content that was needed for processing but not necessary anymore
+            if (array_key_exists('list',$this->reportContent['result']['source']['files']) === true) {
+                unset($this->reportContent['result']['source']['files']['list']);
+            }
+            if (array_key_exists('list',$this->reportContent['result']['source']['missing']) === true) {
+                unset($this->reportContent['result']['source']['missing']['list']);
+            }
+            if (array_key_exists('list',$this->reportContent['result']['destination']['files']) === true) {
+                unset($this->reportContent['result']['source']['files']['list']);
+            }
+            if (array_key_exists('list',$this->reportContent['result']['intersect']) === true) {
+                unset($this->reportContent['result']['intersect']['list']);
+            }
+
+            $this->reportContentDetails = array();
+            $this->reportContentDetails['destination'] = array();
+            $this->reportContentDetails['destination']['missing'] = array();
+            $this->reportContentDetails['destination']['missing']['list'] = $this->reportContent['result']['destination']['missing']['list'];
+            if (array_key_exists('list',$this->reportContent['result']['destination']['missing']) === true) {
+                unset($this->reportContent['result']['destination']['missing']['list']);
+            }
+
             //3- Once done, move the file to the completed directory
+            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk');
             $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileName, json_encode($this->reportContent, JSON_PRETTY_PRINT));
-            $fs->remove($currentFileDir . $currentFileName); 
+            $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz', gzcompress(json_encode($this->reportContentDetails)));
+            $fs->remove($currentFileDir . $currentFileName);
             self::log('info', 'RunSyncReportsCommand.php\execute() - Processing completed for: ' . $currentReportFile);              
         } 
-        self::log('info', 'RunSyncReportsCommand.php\execute() - Finished processing queue');          
-                        
+        self::log('info', 'RunSyncReportsCommand.php\execute() - Finished processing queue');
     }
 
     protected function processLog($file, $logMessage) {
