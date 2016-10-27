@@ -297,29 +297,6 @@ class RunSyncReportsCommand extends ContainerAwareCommand
         $runSystemProcess = new Process('lftp -u ' . $ftpServer['USERNAME'] . ':' . $ftpServer['PASSWORD'] . ' ' . $ftpServer['HOST'] . ':' . $ftpServer['DIRECTORY'] . ' -e "du -b -a;exit" > ' . $dirTmpCacheFile);
         $runSystemProcess->setTimeout(1200000);
         $runSystemProcess->run();
-        //Open file
-        /*
-        $runSystemProcess->run(function ($type, $buffer) {
-            if (Process::ERR === $type) {
-                self::log('info', 'runFtpDu(): Error: ' . $buffer);                
-            } else {
-                $processOutputLines = explode("\n", $buffer);
-                foreach($processOutputLines as $processLine) {
-                    $duParsedLine = self::parseDuLine($processLine, './');
-                    if ($duParsedLine !== false && intval($duParsedLine['size']) > 0 && ($duParsedLine['type'] === 'jpg' || $duParsedLine['type'] === 'raw') && strpos($duParsedLine['path'], 'process') === false) {
-                        $duParsedLine['path'] = substr($duParsedLine['path'], 1); #Hack: When running ftp du, remove first characted of the path, which is typically a /
-                        $currentMd5 = md5($duParsedLine['size'] . $duParsedLine['type'] . $duParsedLine['path']);
-                        $this->duParsedOutput['list'][$currentMd5] = $duParsedLine;
-                        $this->duParsedOutput['count']['total'] = $this->duParsedOutput['count']['total']+1;
-                        if ($duParsedLine['type'] === 'jpg') {$this->duParsedOutput['count']['jpg'] = $this->duParsedOutput['count']['jpg']+1;}
-                        else {$this->duParsedOutput['count']['raw'] = $this->duParsedOutput['count']['raw']+1;}
-                        $this->duParsedOutput['size']['total'] = $this->duParsedOutput['size']['total'] + $duParsedLine['size'];
-                        if ($duParsedLine['type'] === 'jpg') {$this->duParsedOutput['size']['jpg'] = $this->duParsedOutput['size']['jpg']+$duParsedLine['size'];}
-                        else {$this->duParsedOutput['size']['raw'] = $this->duParsedOutput['size']['raw']+$duParsedLine['size'];}
-                    }            
-                }
-            }
-        });*/
         if (!$runSystemProcess->isSuccessful()) {
             self::log('error', 'Unable to perform action');
             return false;
@@ -351,7 +328,6 @@ class RunSyncReportsCommand extends ContainerAwareCommand
 
     protected function runFilesystemDu($sourceId, $duDirectory) {
         $fullDuDirectoryPath = $this->getContainer()->getParameter('dir_sources') . 'source' . intval($sourceId) . '/' . $duDirectory;
-        //$sourcePath = $this->getContainer()->getParameter('dir_sources') . 'source' . intval($sourceId) . '/';
         self::log('info', 'Running command: du -b -a ' . $fullDuDirectoryPath);
         $duParsedOutput = array('list' => array(), 'count' => array('jpg' => 0, 'raw' => 0, 'total' => 0), 'size' => array('jpg' => 0, 'raw' => 0, 'total' => 0));
         $runSystemProcess = new Process('du -b -a ' . $fullDuDirectoryPath);

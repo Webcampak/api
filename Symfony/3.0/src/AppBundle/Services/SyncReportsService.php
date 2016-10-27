@@ -111,19 +111,19 @@ class SyncReportsService
         else {return '';}
     }    
     
-    public function getReports($searchDirectory, $reportType = '') {
+    public function getReports($searchDirectory) {
         $this->logger->info('AppBundle\Services\SyncReportsService\getReports(): directory: ' . $searchDirectory);
         $reports = array();
         if (is_dir($searchDirectory)) {
             $finder = new Finder();
             $finder->files();
             $finder->sortByName();
-            $finder->files()->name('*' . $reportType . '.jso*');
+            $finder->files()->name('*.jso*');
             $finder->depth('== 0');
             $finder->in($searchDirectory);
-            foreach ($finder as $file) {   
+            foreach ($finder as $file) {
                 array_push($reports, $file->getRealpath());
-                $this->logger->info($file->getRealpath());                        
+                $this->logger->info($file->getRealpath());
             }              
         }      
         return $reports;
