@@ -12,7 +12,7 @@ use AppBundle\Services\FilesService;
 
 class StatusService
 {
-    public function __construct(TokenStorage $tokenStorage, AuthorizationChecker $authorizationChecker, Doctrine $doctrine, Logger $logger, FilesService $filesService, SourcesService $sourcesService, DevicesService $devicesService, UserService $userService, ScheduleService $scheduleService, ConfigurationService $configurationService, StatsService $statsService, $kernelRootDir, $etcDir) {
+    public function __construct(TokenStorage $tokenStorage, AuthorizationChecker $authorizationChecker, Doctrine $doctrine, Logger $logger, FilesService $filesService, SourcesService $sourcesService, DevicesService $devicesService, UserService $userService, ScheduleService $scheduleService, ConfigurationService $configurationService, StatsService $statsService, PicturesDirectoryService $picturesDirectoryService, $kernelRootDir, $etcDir) {
         $this->tokenStorage         = $tokenStorage;
         $this->authorizationChecker = $authorizationChecker;        
         $this->em              = $doctrine->getManager();
@@ -24,6 +24,7 @@ class StatusService
         $this->devicesService  = $devicesService;
         $this->userService     = $userService;
         $this->statsService    = $statsService;
+        $this->picturesDirectoryService    = $picturesDirectoryService;
         $this->scheduleService      = $scheduleService;
         $this->configurationService = $configurationService;
         $this->kernelRootDir        = $kernelRootDir;
@@ -119,7 +120,8 @@ class StatusService
             $userSources[$idx]['capture']['rate'] = $sourceCaptureRate;
             
             //Get last capture file
-            $userSources[$idx]['capture']['last']['filename'] = $this->sourcesService->getLastPictureForSource($sourceConfig['SOURCEID']);
+            $userSources[$idx]['capture']['last']['filename'] = $this->picturesDirectoryService->getLatestPictureForSource($sourceConfig['SOURCEID']);
+
 
             $userSources[$idx]['capture']['last']['date'] = \DateTime::createFromFormat('YmdHis', substr($userSources[$idx]['capture']['last']['filename'], 0,14), new \DateTimeZone($sourceTimezone));            
             if ($userSources[$idx]['capture']['last']['date'] instanceof \DateTime) {

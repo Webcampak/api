@@ -28,25 +28,7 @@ class SourcesService
         $this->paramDirWatermark    = $paramDirWatermark;
         $this->paramDirEtc          = $paramDirEtc;
     }
-
-    public function getLastPictureForSource($souId) {
-        $this->logger->info('AppBundle\Services\SourcesService\getLastPictureForSource() - Start');
-        $pictureDir = $this->paramDirSources . 'source' . $souId . '/pictures/';
-        $fs = new Filesystem();
-        if ($fs->exists($pictureDir)) {
-            $finder = new Finder();
-            $finder->sortByName();
-            $finder->files()->name('20*.jpg');
-            $finder->in($pictureDir);
-            $finder->in($pictureDir)->exclude('process-video');            
-            $lastFile = null;
-            foreach($finder as $file) {
-                $lastFile = $file->getFilename();
-            }
-            return $lastFile;
-        }
-    }
-
+    
     public function getSourceDirectorySize($souId) {
         $this->logger->info('AppBundle\Services\SourcesService\getSourceDirectorySize() - Start');
         $sourceDir = $this->paramDirSources . 'source' . $souId . '/';
