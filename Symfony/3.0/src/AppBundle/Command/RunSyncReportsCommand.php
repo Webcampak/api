@@ -123,7 +123,8 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             }
 
             //3- Once done, move the file to the completed directory
-            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk');
+            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileName);
+            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz');
             $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileName, json_encode($this->reportContent, JSON_PRETTY_PRINT));
             $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz', gzcompress(json_encode($this->reportContentDetails)));
             $fs->remove($currentFileDir . $currentFileName);
