@@ -11,17 +11,19 @@ use \DateTime;
 
 class SyncReportsService
 {
-    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, UserService $userService, ConfigurationService $configurationService, $paramDirSyncReports, $paramDirSources, $paramDirConfig) {
+    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, UserService $userService, ConfigurationService $configurationService, FtpService $ftpService, $paramDirSyncReports, $paramDirSources, $paramDirConfig, $paramDirEtc) {
         $this->tokenStorage              = $tokenStorage;
         $this->em                           = $doctrine->getManager();
         $this->logger                       = $logger;
         $this->connection                   = $doctrine->getConnection();
         $this->doctrine                     = $doctrine;
-        $this->userService                  = $userService;        
-        $this->configurationService         = $configurationService;        
+        $this->userService                  = $userService;
+        $this->configurationService         = $configurationService;
+        $this->ftpService                   = $ftpService;
         $this->paramDirSyncReports          = $paramDirSyncReports;
         $this->paramDirSources              = $paramDirSources;
         $this->paramDirConfig               = $paramDirConfig;
+        $this->paramDirEtc                  = $paramDirEtc;
     }
 
     public function getSyncReportsList(\AppBundle\Entities\Database\Users $userEntity) {
@@ -37,7 +39,8 @@ class SyncReportsService
         foreach ($userSources as $userSource) {
             $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSources . 'source' . $userSource['SOURCEID'] . '/resources/sync-reports/'));
         }
-                
+
+        $userSourcesFtp = array();
         foreach ($userReportsFiles as $reportFile) {
             $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - File: ' . $reportFile);
             $reportContent = self::readReportFile($reportFile);
@@ -47,8 +50,40 @@ class SyncReportsService
             if (isset($reportContent['result']['source']['files']['size']['total'])) {$reportContentSrcSize = $reportContent['result']['source']['files']['size']['total'];}
             else {$reportContentSrcSize = '';}                 
             if (isset($reportContent['result']['destination']['files']['size']['total'])) {$reportContentDstSize = $reportContent['result']['destination']['files']['size']['total'];}
-            else {$reportContentDstSize = '';}                 
-                                                
+            else {$reportContentDstSize = '';}
+
+            $srcSourceID = $reportContent['job']['source']['sourceid'];
+            $dstSourceID = $reportContent['job']['source']['sourceid'];
+            if (!isset($userSourcesFtp[$srcSourceID])) {
+                $ftpServerConfigFile =  $this->paramDirEtc . "config-source" .$srcSourceID . "-ftpservers.cfg";
+                $userSourcesFtp[$srcSourceID] = $this->ftpService->getServersFromConfigFile($ftpServerConfigFile);
+            }
+            if (!isset($userSourcesFtp[$dstSourceID])) {
+                $ftpServerConfigFile =  $this->paramDirEtc . "config-source" .$dstSourceID . "-ftpservers.cfg";
+                $userSourcesFtp[$dstSourceID] = $this->ftpService->getServersFromConfigFile($ftpServerConfigFile);
+            }
+
+            if (isset($reportContent['job']['source']['ftpserverid']) && intval($reportContent['job']['source']['ftpserverid']) > 0) {
+                $srcName = "Unable to find";
+                foreach ($userSourcesFtp[$srcSourceID] as $ftpServer) {
+                    if (intval($ftpServer['ID']) === intval($reportContent['job']['source']['ftpserverid'])) {
+                        $srcName = 'FTP - ' . $ftpServer['NAME'];
+                    }
+                }
+            } else {
+                $srcName = 'Filesystem';
+            }
+            if (isset($reportContent['job']['destination']['ftpserverid']) && intval($reportContent['job']['destination']['ftpserverid']) > 0) {
+                $dstName = "Unable to find";
+                foreach ($userSourcesFtp[$srcSourceID] as $ftpServer) {
+                    if (intval($ftpServer['ID']) === intval($reportContent['job']['destination']['ftpserverid'])) {
+                        $dstName = 'FTP - ' . $ftpServer['NAME'];
+                    }
+                }
+            } else {
+                $dstName = 'Filesystem';
+            }
+
             array_push($userReports, array(
                 'NAME' => self::formatReportValue($reportContent['job']['name'])
                 , 'XFER' => $reportContent['job']['xfer']
@@ -62,6 +97,7 @@ class SyncReportsService
                 , 'SRC_SOURCEID' => self::formatReportValue($reportContent['job']['source']['sourceid'])
                 , 'SRC_TYPE' => self::formatReportValue($reportContent['job']['source']['type'])
                 , 'SRC_FTPSERVERID' => self::formatReportValue($reportContent['job']['source']['ftpserverid'])
+                , 'SRC_NAME' => $srcName
                 , 'SRC_SIZE' => $reportContentSrcSize
                 , 'SRC_RESULT_FILES_COUNT_JPG' => self::formatReportValue($reportContent['result']['source']['files']['count']['jpg'])
                 , 'SRC_RESULT_FILES_COUNT_RAW' => self::formatReportValue($reportContent['result']['source']['files']['count']['raw'])
@@ -80,7 +116,8 @@ class SyncReportsService
                 , 'DST_SOURCEID' => self::formatReportValue($reportContent['job']['destination']['sourceid'])
                 , 'DST_TYPE' => self::formatReportValue($reportContent['job']['destination']['type'])
                 , 'DST_FTPSERVERID' => self::formatReportValue($reportContent['job']['destination']['ftpserverid'])
-                , 'DST_SIZE' => $reportContentDstSize          
+                , 'DST_NAME' => $dstName
+                , 'DST_SIZE' => $reportContentDstSize
                 , 'DST_RESULT_FILES_COUNT_JPG' => self::formatReportValue($reportContent['result']['destination']['files']['count']['jpg'])
                 , 'DST_RESULT_FILES_COUNT_RAW' => self::formatReportValue($reportContent['result']['destination']['files']['count']['raw'])
                 , 'DST_RESULT_FILES_COUNT_TOTAL' => self::formatReportValue($reportContent['result']['destination']['files']['count']['total'])

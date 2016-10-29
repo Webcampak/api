@@ -28,7 +28,7 @@ class SourcesService
         $this->paramDirWatermark    = $paramDirWatermark;
         $this->paramDirEtc          = $paramDirEtc;
     }
-    
+
     public function getSourceDirectorySize($souId) {
         $this->logger->info('AppBundle\Services\SourcesService\getSourceDirectorySize() - Start');
         $sourceDir = $this->paramDirSources . 'source' . $souId . '/';
