@@ -67,21 +67,21 @@ class SyncReportsService
                 $srcName = "Unable to find";
                 foreach ($userSourcesFtp[$srcSourceID] as $ftpServer) {
                     if (intval($ftpServer['ID']) === intval($reportContent['job']['source']['ftpserverid'])) {
-                        $srcName = 'FTP - ' . $ftpServer['NAME'];
+                        $srcName = $ftpServer['NAME'];
                     }
                 }
             } else {
-                $srcName = 'Filesystem';
+                $srcName = 'filesystem';
             }
             if (isset($reportContent['job']['destination']['ftpserverid']) && intval($reportContent['job']['destination']['ftpserverid']) > 0) {
                 $dstName = "Unable to find";
                 foreach ($userSourcesFtp[$srcSourceID] as $ftpServer) {
                     if (intval($ftpServer['ID']) === intval($reportContent['job']['destination']['ftpserverid'])) {
-                        $dstName = 'FTP - ' . $ftpServer['NAME'];
+                        $dstName = $ftpServer['NAME'];
                     }
                 }
             } else {
-                $dstName = 'Filesystem';
+                $dstName = 'filesystem';
             }
 
             array_push($userReports, array(
