@@ -46,7 +46,19 @@ class SyncReportsService
             $reportContent = self::readReportFile($reportFile);
             
             $reportFilePathInfo = pathinfo($reportFile);
-                        
+
+            if ($reportContent['job']['xfer'] === true) {
+                $cptTransferedFiles = self::getXferStatus($reportFile);
+                $cptToBeTransferedFiles = self::formatReportValue($reportContent['result']['destination']['missing']['count']['total']);
+                $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - Number of files already transferred for report: ' . $cptTransferedFiles);
+                $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - Number of files to be transferred: ' . $cptToBeTransferedFiles);
+                $prctCompleted = round($cptTransferedFiles * 100 / $cptToBeTransferedFiles, 2);
+                $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - Percent Completed: ' . $prctCompleted);
+                $xferStatus = $prctCompleted . "% (" . $cptTransferedFiles . " / " . $cptToBeTransferedFiles . ")";
+            } else {
+                $xferStatus = "n/a";
+            }
+
             if (isset($reportContent['result']['source']['files']['size']['total'])) {$reportContentSrcSize = $reportContent['result']['source']['files']['size']['total'];}
             else {$reportContentSrcSize = '';}                 
             if (isset($reportContent['result']['destination']['files']['size']['total'])) {$reportContentDstSize = $reportContent['result']['destination']['files']['size']['total'];}
@@ -87,6 +99,7 @@ class SyncReportsService
             array_push($userReports, array(
                 'NAME' => self::formatReportValue($reportContent['job']['name'])
                 , 'XFER' => $reportContent['job']['xfer']
+                , 'XFER_STATUS' => $xferStatus
                 , 'STATUS' => self::formatReportValue($reportContent['job']['status'])
                 , 'FILENAME' => $reportFilePathInfo['basename']
                 , 'LOGS' => json_encode(self::formatReportValue($reportContent['job']['logs']))
@@ -112,7 +125,6 @@ class SyncReportsService
                 , 'SRC_RESULT_MISSING_SIZE_RAW' => self::formatReportValue($reportContent['result']['source']['missing']['size']['raw'])
                 , 'SRC_RESULT_MISSING_SIZE_TOTAL' => self::formatReportValue($reportContent['result']['source']['missing']['size']['total'])                     
 
-                    
                 , 'DST_SOURCEID' => self::formatReportValue($reportContent['job']['destination']['sourceid'])
                 , 'DST_TYPE' => self::formatReportValue($reportContent['job']['destination']['type'])
                 , 'DST_FTPSERVERID' => self::formatReportValue($reportContent['job']['destination']['ftpserverid'])
@@ -167,7 +179,22 @@ class SyncReportsService
             }              
         }      
         return $reports;
-    }     
+    }
+
+    public function getXferStatus($reportFile) {
+        $reportDirectory = str_replace(".json", "/", $reportFile);
+        $this->logger->info('AppBundle\Services\SyncReportsService\getXferStatus(): Directory: ' . $reportDirectory);
+        if (is_dir($reportDirectory)) {
+            $finder = new Finder();
+            $finder->files();
+            $finder->sortByName();
+            $finder->files()->name('*.json.gz');
+            $finder->in($reportDirectory);
+            return iterator_count($finder);
+        } else {
+            return 0;
+        }
+    }
 
     public function createSyncReport(\AppBundle\Entities\Database\Users $userEntity, $inputParams) {
         $this->logger->info('AppBundle\Services\SyncReportsService\createSyncReport()');        
