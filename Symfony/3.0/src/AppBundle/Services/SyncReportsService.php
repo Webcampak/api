@@ -52,7 +52,11 @@ class SyncReportsService
                 $cptToBeTransferedFiles = self::formatReportValue($reportContent['result']['destination']['missing']['count']['total']);
                 $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - Number of files already transferred for report: ' . $cptTransferedFiles);
                 $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - Number of files to be transferred: ' . $cptToBeTransferedFiles);
-                $prctCompleted = round($cptTransferedFiles * 100 / $cptToBeTransferedFiles, 2);
+                if (intval($cptTransferedFiles) === 0 || intval($cptToBeTransferedFiles) === 0 ) {
+                    $prctCompleted = 0;
+                } else {
+                    $prctCompleted = round($cptTransferedFiles * 100 / $cptToBeTransferedFiles, 2);
+                }
                 $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - Percent Completed: ' . $prctCompleted);
                 $xferStatus = $prctCompleted . "% (" . $cptTransferedFiles . " / " . $cptToBeTransferedFiles . ")";
             } else {
