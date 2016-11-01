@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use \DateTime;
+use Symfony\Component\Process\Process;
 
 class SyncReportsService
 {
@@ -189,12 +190,21 @@ class SyncReportsService
         $reportDirectory = str_replace(".json", "/", $reportFile);
         $this->logger->info('AppBundle\Services\SyncReportsService\getXferStatus(): Directory: ' . $reportDirectory);
         if (is_dir($reportDirectory)) {
+            /* Initial testing revealed that very large directories can actually be very memory intensive, falling back to a simpler unix-based method
             $finder = new Finder();
             $finder->files();
             $finder->sortByName();
             $finder->files()->name('*.json.gz');
             $finder->in($reportDirectory);
             return iterator_count($finder);
+            */
+            // This method is much more archaic, but also much faster to get the count
+            //ls -f | wc -l
+            $runSystemProcess = new Process('ls -f ' . $reportDirectory . ' | wc -l');
+            $runSystemProcess->run();
+            $nbFiles = intval($runSystemProcess->getOutput());
+            $nbFiles = $nbFiles - 2; // Removed 2 since ls -f also lists . and ..
+            return $nbFiles;
         } else {
             return 0;
         }
