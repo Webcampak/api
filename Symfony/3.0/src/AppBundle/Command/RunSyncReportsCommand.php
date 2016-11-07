@@ -74,7 +74,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             $reportFilePathInfo = pathinfo($currentReportFile);
             $currentFileDir = $reportDir . 'process/';
             $currentFileName = $reportFilePathInfo['basename'];
-            $currentFileNameDetails = str_replace(".json","details.json",$currentFileName);
+            $currentFileNameDetails = str_replace(".json","-details.json",$currentFileName);
             
             $this->reportContent = $this->getContainer()->get('app.svc.syncreports')->readReportFile($currentReportFile);
             $this->reportContent['job']['status'] = 'process';
@@ -126,7 +126,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileName);
             self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz');
             $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileName, json_encode($this->reportContent, JSON_PRETTY_PRINT));
-            $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz', gzcompress(json_encode($this->reportContentDetails)));
+            $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz', gzencode(json_encode($this->reportContentDetails)));
             $fs->remove($currentFileDir . $currentFileName);
             self::log('info', 'RunSyncReportsCommand.php\execute() - Processing completed for: ' . $currentReportFile);              
         } 
