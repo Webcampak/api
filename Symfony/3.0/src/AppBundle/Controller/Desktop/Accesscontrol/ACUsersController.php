@@ -42,6 +42,7 @@ class ACUsersController extends Controller {
                         , LASTNAME
                         , EMAIL
                         , LANG
+                        , (SELECT COUNT(*) FROM LOGIN_HISTORY WHERE LOGIN_HISTORY.USERNAME = USERS.USERNAME AND LOGIN_HISTORY.USER_AGENT != 'CONNECTEDPING' ) AS LOG_COUNT
                       FROM USERS
                       ORDER BY USERNAME");
 
