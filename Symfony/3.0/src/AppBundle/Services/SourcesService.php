@@ -3,11 +3,9 @@ namespace AppBundle\Services;
 
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine; // for Symfony 2.1.0+
 use Symfony\Bridge\Monolog\Logger;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Filesystem\Filesystem;
 
 use AppBundle\Entities\Database\Sources;
 use AppBundle\Entities\Database\UsersSources;
