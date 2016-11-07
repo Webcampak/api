@@ -152,8 +152,8 @@ class StatusService
             }
             $userSources[$idx]['disk']['Free'] = $userSources[$idx]['disk']['Total'] - $this->sourcesService->getSourceDirectorySize($sourceConfig['SOURCEID']);
             
-            $userSources[$idx]['history']['size'] = array_reverse($this->statsService->getSourcesDiskUsage($sourceConfig['SOURCEID'], 15));
-            $userSources[$idx]['history']['count'] = array_reverse($this->statsService->getSourcesPicturesCountSize($sourceConfig['SOURCEID'], 15));
+            //$userSources[$idx]['history']['size'] = array_reverse($this->statsService->getSourcesDiskUsage($sourceConfig['SOURCEID'], 15));
+            //$userSources[$idx]['history']['count'] = array_reverse($this->statsService->getSourcesPicturesCountSize($sourceConfig['SOURCEID'], 15));
                         
         }
         return $userSources;
