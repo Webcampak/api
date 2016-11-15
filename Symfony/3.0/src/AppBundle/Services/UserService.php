@@ -4,12 +4,13 @@ namespace AppBundle\Services;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine; // for Symfony 2.1.0+
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Process\Process;
 
 use AppBundle\Entities\Database\Users;
 
 class UserService
 {
-    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, $kernelRootDir) {
+    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, $kernelRootDir, $appCore, $appCli, $appApi, $appUi) {
         $this->tokenStorage      = $tokenStorage;
         $this->em                   = $doctrine->getManager();
         $this->logger               = $logger;
@@ -17,6 +18,10 @@ class UserService
         $this->doctrine             = $doctrine;
         $this->kernelRootDir        = $kernelRootDir;
         $this->currentUserEntity    = $tokenStorage->getToken()->getUser();
+        $this->appCore      = $appCore;
+        $this->appCli       = $appCli;
+        $this->appApi       = $appApi;
+        $this->appUi        = $appUi;
     }
 
     public function getUserPermissions(Users $userEntity) {
@@ -222,14 +227,43 @@ class UserService
             array_push($dbresults, array('CODE' => 'STYLE_BG_LOGO', 'VALUE' => $userEntity->getCus()->getStyleBgLogo()));
         }
 
-        $this->logger->info('AppBundle\Services\UserService\getSettings() - Looking for release info in: ' . $this->kernelRootDir. '/../../../../build.txt');
-        if (is_file($this->kernelRootDir. '/../../../../build.txt')) {
-            $currentBuild = file_get_contents($this->kernelRootDir. '../../../build.txt');
-            $currentBuild = preg_replace('/[^(\x20-\x7F)]*/','', $currentBuild);
-            $logger->info('AppBundle\Controller\Authentication\UserSettings.php\getSettingsAction() - Current Build: ' . $currentBuild);
-            array_push($dbresults, array('CODE' => 'CURRENTBUILD', 'VALUE' => $currentBuild));
-        }
+        $this->logger->info('AppBundle\Services\UserService\getSettings() - Get Software Version');
+        $command = "git -C " . $this->appCore . " describe --tags";
+        $getCoreVersion = new Process($command);
+        $getCoreVersion->run();
+        $coreVersion = preg_replace( "/\r|\n|\t/", "", $getCoreVersion->getOutput());
+        $this->logger->info('AppBundle\Services\UserService\getSettings() - Get Software Version - Core: ' . $coreVersion);
+        array_push($dbresults, array('CODE' => 'VERSION_CORE', 'VALUE' =>  $coreVersion));
 
+        $command = "git -C " . $this->appUi . " describe --tags";
+        $getUiVersion = new Process($command);
+        $getUiVersion->run();
+        $uiVersion = preg_replace( "/\r|\n|\t/", "", $getUiVersion->getOutput());
+        $this->logger->info('AppBundle\Services\UserService\getSettings() - Get Software Version - UI: ' . $uiVersion);
+        array_push($dbresults, array('CODE' => 'VERSION_UI', 'VALUE' =>  $uiVersion));
+
+        $command = "git -C " . $this->appApi . " describe --tags";
+        $getApiVersion = new Process($command);
+        $getApiVersion->run();
+        $apiVersion = preg_replace( "/\r|\n|\t/", "", $getApiVersion->getOutput());
+        $this->logger->info('AppBundle\Services\UserService\getSettings() - Get Software Version - API: ' . $apiVersion);
+        array_push($dbresults, array('CODE' => 'VERSION_API', 'VALUE' =>  $apiVersion));
+
+        $command = "git -C " . $this->appCli . " describe --tags";
+        $getCliVersion = new Process($command);
+        $getCliVersion->run();
+        $cliVersion = preg_replace( "/\r|\n|\t/", "", $getCliVersion->getOutput());
+        $this->logger->info('AppBundle\Services\UserService\getSettings() - Get Software Version - CLI: ' . $cliVersion);
+        array_push($dbresults, array('CODE' => 'VERSION_CLI', 'VALUE' =>  $cliVersion));
+
+        //CURRENTBUILD is the number displayed in the toolbar, VERSION_* are additional version of the various components
+        preg_match("/v(\d+)\.(\d+)\.(\d+)/", $uiVersion, $mainVersion);
+        if ($mainVersion !== $uiVersion) {
+            array_push($dbresults, array('CODE' => 'CURRENTBUILD', 'VALUE' => 'dev (' . $mainVersion[0] . ')'));
+        } else {
+            array_push($dbresults, array('CODE' => 'CURRENTBUILD', 'VALUE' => $mainVersion[0]));
+        }
+        
         $receivedSenchaApp = 'WPAKD';
         if (isset($inputParams['SENCHA_APP'])) {
               $receivedSenchaApp = $inputParams['SENCHA_APP'];
