@@ -263,7 +263,7 @@ class UserService
         } else {
             array_push($dbresults, array('CODE' => 'CURRENTBUILD', 'VALUE' => $mainVersion[0]));
         }
-        
+
         $receivedSenchaApp = 'WPAKD';
         if (isset($inputParams['SENCHA_APP'])) {
               $receivedSenchaApp = $inputParams['SENCHA_APP'];
