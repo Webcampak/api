@@ -151,7 +151,7 @@ class StatusService
                 $userSources[$idx]['disk']['Total'] = intval($sourceConfig['QUOTA']);
             }
             $userSources[$idx]['disk']['Free'] = $userSources[$idx]['disk']['Total'] - $this->sourcesService->getSourceDirectorySize($sourceConfig['SOURCEID']);
-            
+
         }
         return $userSources;
     }

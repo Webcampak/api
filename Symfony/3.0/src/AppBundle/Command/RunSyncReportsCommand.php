@@ -74,8 +74,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             $reportFilePathInfo = pathinfo($currentReportFile);
             $currentFileDir = $reportDir . 'process/';
             $currentFileName = $reportFilePathInfo['basename'];
-            $currentFileNameDetails = str_replace(".json","-details.json",$currentFileName);
-            
+
             $this->reportContent = $this->getContainer()->get('app.svc.syncreports')->readReportFile($currentReportFile);
             $this->reportContent['job']['status'] = 'process';
 
@@ -108,7 +107,7 @@ class RunSyncReportsCommand extends ContainerAwareCommand
                 unset($this->reportContent['result']['source']['missing']['list']);
             }
             if (array_key_exists('list',$this->reportContent['result']['destination']['files']) === true) {
-                unset($this->reportContent['result']['source']['files']['list']);
+                unset($this->reportContent['result']['destination']['files']['list']);
             }
             if (array_key_exists('list',$this->reportContent['result']['intersect']) === true) {
                 unset($this->reportContent['result']['intersect']['list']);
@@ -123,10 +122,13 @@ class RunSyncReportsCommand extends ContainerAwareCommand
             }
 
             //3- Once done, move the file to the completed directory
-            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileName);
-            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz');
-            $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileName, json_encode($this->reportContent, JSON_PRETTY_PRINT));
-            $fs->dumpFile($this->getContainer()->getParameter('dir_sources') . 'source' . $this->reportContent['job']['source']['sourceid'] . '/resources/sync-reports/' . $currentFileNameDetails . '.gz', gzencode(json_encode($this->reportContentDetails)));
+            $currentFileNameSummary = str_replace(".json","-summary.json",$currentFileName);
+            $currentFileNameDetails = str_replace(".json","-details.json",$currentFileName);
+            if (!is_dir($reportDir . 'completed/')) {$fs->mkdir($reportDir . 'completed/', 0700);}
+            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $reportDir . 'completed/' . $currentFileNameSummary);
+            self::processLog($currentFileDir . $currentFileName, 'Saving report to disk: ' . $reportDir . 'completed/' . $currentFileNameDetails . '.gz');
+            $fs->dumpFile($reportDir . 'completed/' . $currentFileNameSummary, json_encode($this->reportContent, JSON_PRETTY_PRINT));
+            $fs->dumpFile($reportDir . 'completed/' . $currentFileNameDetails . '.gz', gzencode(json_encode($this->reportContentDetails)));
             $fs->remove($currentFileDir . $currentFileName);
             self::log('info', 'RunSyncReportsCommand.php\execute() - Processing completed for: ' . $currentReportFile);              
         } 

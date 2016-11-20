@@ -31,15 +31,12 @@ class SyncReportsService
         $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList()');
         
         $userReports = array();
-        $userReportsFiles = array();
-        
-        $userSources = $this->userService->getCurrentSourcesByUseId($userEntity->getUseId());
 
+        //Create an array containing all report files, queued, in process and completed
+        $userReportsFiles = array();
         $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'queued/'));
         $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'process/'));
-        foreach ($userSources as $userSource) {
-            $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSources . 'source' . $userSource['SOURCEID'] . '/resources/sync-reports/'));
-        }
+        $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'completed/', 'summary.json'));
 
         $userSourcesFtp = array();
         foreach ($userReportsFiles as $reportFile) {
@@ -165,8 +162,9 @@ class SyncReportsService
         else {return '';}
     }    
     
-    public function getReports($searchDirectory) {
-        $this->logger->info('AppBundle\Services\SyncReportsService\getReports(): directory: ' . $searchDirectory);
+    public function getReports($searchDirectory, $searchPattern = '.json') {
+        $this->logger->info('AppBundle\Services\SyncReportsService\getReports(): Directory: ' . $searchDirectory);
+        $this->logger->info('AppBundle\Services\SyncReportsService\getReports(): Pattern: ' . $searchPattern);
         $reports = array();
         if (is_dir($searchDirectory)) {
             $finder = new Finder();
@@ -177,7 +175,8 @@ class SyncReportsService
             $finder->in($searchDirectory);
             foreach ($finder as $file) {
                 // If exclude the details file
-                if (strpos($file->getRealpath(), 'details') === false) {
+                if (strpos($file->getRealpath(), $searchPattern) !== false) {
+                    $this->logger->info('AppBundle\Services\SyncReportsService\getReports(): Found: ' . $file->getRealpath());
                     array_push($reports, $file->getRealpath());
                     $this->logger->info($file->getRealpath());
                 }
@@ -187,7 +186,7 @@ class SyncReportsService
     }
 
     public function getXferStatus($reportFile) {
-        $reportDirectory = str_replace(".json", "/", $reportFile);
+        $reportDirectory = str_replace("-summary.json", "/", $reportFile);
         $this->logger->info('AppBundle\Services\SyncReportsService\getXferStatus(): Directory: ' . $reportDirectory);
         if (is_dir($reportDirectory)) {
             /* Initial testing revealed that very large directories can actually be very memory intensive, falling back to a simpler unix-based method
@@ -313,23 +312,43 @@ class SyncReportsService
 
         if ($this->userService->hasUserAccessToSourceId($userEntity, $inputParams['SRC_SOURCEID']) === true 
                 && $this->userService->hasUserAccessToSourceId($userEntity, $inputParams['DST_SOURCEID']) === true) {
-            $this->logger->info('AppBundle\Services\SyncReportsService\createSyncReport() - Access to the SRC and DST sources verified');
+            $this->logger->info('AppBundle\Services\SyncReportsService\removeSyncReport() - Access to the SRC and DST sources verified');
             
-            $userSources = $this->userService->getCurrentSourcesByUseId($userEntity->getUseId());          
-            $userReportsFiles = array();            
+            $userReportsFiles = array();
             $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'queued/'));
             $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'process/'));
-            foreach ($userSources as $userSource) {
-                $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSources . 'source' . $userSource['SOURCEID'] . '/resources/sync-reports/'));
-            }
+            $userReportsFiles = array_merge($userReportsFiles, self::getReports($this->paramDirSyncReports . 'completed/'));
             foreach ($userReportsFiles as $reportFile) {
                 $this->logger->info('AppBundle\Services\SyncReportsService\getSyncReportsList() - File: ' . $reportFile);
                 $reportFilePathInfo = pathinfo($reportFile);
                 if ($inputParams['FILENAME'] === $reportFilePathInfo['basename']) {
+                    // We don't actually remove, but move the report to the deleted/ directory
+                    $reportDetails = str_replace("-summary.json","-details.json",$reportFile);
+                    $reportDir = str_replace("-summary.json","",$reportFile);
+
                     $fs = new Filesystem();
-                    $fs->remove($reportFile);
-                    $detailReport = str_replace(".json","details.json",$reportFile);
-                    $fs->remove($detailReport);
+                    if (!is_dir($this->paramDirSyncReports . 'deleted/')) {$fs->mkdir($this->paramDirSyncReports . 'deleted/', 0700);}
+
+                    if (is_file($reportFile)) {
+                        $this->logger->info('AppBundle\Services\SyncReportsService\removeSyncReport() - About to move file: ' . $reportFile);
+                        $reportFilePathInfo = pathinfo($reportFile);
+                        rename($reportFile, $this->paramDirSyncReports . 'deleted/' . $reportFilePathInfo['basename']);
+                        $this->logger->info('AppBundle\Services\SyncReportsService\removeSyncReport() - File moved to: ' . $this->paramDirSyncReports . 'deleted/' . $reportFilePathInfo['basename']);
+                    }
+
+                    if (is_file($reportDetails)) {
+                        $this->logger->info('AppBundle\Services\SyncReportsService\removeSyncReport() - About to move file: ' . $reportDetails);
+                        $reportFileDetailsPathInfo = pathinfo($reportDetails);
+                        rename($reportDetails, $this->paramDirSyncReports . 'deleted/' . $reportFileDetailsPathInfo['basename']);
+                        $this->logger->info('AppBundle\Services\SyncReportsService\removeSyncReport() - File moved to: ' . $this->paramDirSyncReports . 'deleted/' . $reportFileDetailsPathInfo['basename']);
+                    }
+
+                    if (is_file($reportDir)) {
+                        $this->logger->info('AppBundle\Services\SyncReportsService\removeSyncReport() - About to move directory: ' . $reportDir);
+                        $reportDirPathInfo = pathinfo($reportDir);
+                        rename($reportDir, $this->paramDirSyncReports . 'deleted/' . $reportDirPathInfo['dirname']);
+                        $this->logger->info('AppBundle\Services\SyncReportsService\removeSyncReport() - Directory moved to: ' . $this->paramDirSyncReports . 'deleted/' . $reportDirPathInfo['dirname']);
+                    }
                     return array("success" => true, "message" => "Report deleted");
                 }
             }
@@ -348,8 +367,11 @@ class SyncReportsService
         foreach ($userReportsFiles as $reportFile) {
             $this->logger->info('AppBundle\Services\SyncReportsService\searchSyncReportInQueue() - Testing File: ' . $reportFile);
             $reportContent = self::readReportFile($reportFile);
-            if (isset($reportContent['job']['hash']) && $reportContent['job']['hash'] === $hash) {                
-                $reportFound = true;
+            if (isset($reportContent['job']['hash'])) {
+                $this->logger->info('AppBundle\Services\SyncReportsService\searchSyncReportInQueue() - Found Report Hash: ' . $reportContent['job']['hash']);
+                if ( $reportContent['job']['hash'] === $hash) {
+                    $reportFound = true;
+                }
             }
         }        
         return  $reportFound;        
