@@ -117,6 +117,8 @@ class AlertsCommand extends ContainerAwareCommand
                 file_put_contents($alertsFile, json_encode($alertArray) . "\n", FILE_APPEND);
                 
                 $sourceAlerts[$sourceEntity->getSourceId()] = $alertArray;
+            } else {
+                self::log($output, 'info', 'AlertsCommand.php\execute() - ' . $sourceEntity->getSourceId() . ' -  Alerts for this source are disabled');
             }
         }
         
