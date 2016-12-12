@@ -323,7 +323,7 @@ class SyncReportsService
                 $reportFilePathInfo = pathinfo($reportFile);
                 if ($inputParams['FILENAME'] === $reportFilePathInfo['basename']) {
                     // We don't actually remove, but move the report to the deleted/ directory
-                    $reportDetails = str_replace("-summary.json","-details.json",$reportFile);
+                    $reportDetails = str_replace("-summary.json","-details.json.gz",$reportFile);
                     $reportDir = str_replace("-summary.json","",$reportFile);
 
                     $fs = new Filesystem();
