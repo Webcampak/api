@@ -272,6 +272,7 @@ class SourceCreateCommand extends ContainerAwareCommand
     protected function createSourceDirectories(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceCreateCommand.php\createDirectories() - Create Source Directories');
         $wpakSourcesDirectory = $this->getContainer()->getParameter('dir_sources');
+        $logsDirectory = $this->getContainer()->getParameter('dir_logs');
 
         $fs = new Filesystem();
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId, 0700);
@@ -287,6 +288,7 @@ class SourceCreateCommand extends ContainerAwareCommand
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/alerts/incidents", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/reports", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/capture", 0700);
+        $fs->mkdir($logsDirectory . "source" . $sourceId . "/", 0700);
 //        $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/sync-reports", 0700); #sync-reports are not located in the source directory anymore
     }
 

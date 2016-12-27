@@ -50,10 +50,11 @@ class SourceDeleteCommand extends ContainerAwareCommand
         if (!$fs->exists($resourcesDirectory . 'deleted/')) {$fs->mkdir($resourcesDirectory . 'deleted/', 0700 );}
         $fs->mkdir($targetDirectory, 0700 );
         $fs->mkdir($targetDirectory . 'etc', 0700 );
-        $fs->mkdir($targetDirectory . 'logs', 0700 );
+        //$fs->mkdir($targetDirectory . 'logs', 0700 );
 
         self::moveSourceContent($output, $sourceId, $targetDirectory);
         self::moveSourceConfiguration($output, $sourceId, $targetDirectory);
+        self::moveSourceLogs($output, $sourceId, $targetDirectory);
 
         // Update Crontab
         self::updateCron($output);
@@ -90,7 +91,8 @@ class SourceDeleteCommand extends ContainerAwareCommand
 
     protected function moveSourceLogs(OutputInterface $output, $sourceId, $targetDirectory) {
         self::log($output, 'info', 'SourceDeleteCommand.php\moveSourceConfiguration() - Move source logs to backup location');
-
+        $logsDirectory = $this->getContainer()->getParameter('dir_logs');
+        self::moveFile($output, $logsDirectory . 'source' . $sourceId, $targetDirectory . 'logs');
     }
 
     protected function moveFile($output, $sourceFile, $destinationFile) {
