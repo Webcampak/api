@@ -77,7 +77,8 @@ class SourceMoveCommand extends ContainerAwareCommand
 
     protected function moveSourceLogs(OutputInterface $output, $sourceId) {
         self::log($output, 'info', 'SourceMoveCommand.php\moveSourceConfiguration() - Move source logs to backup location');
-
+        $logsDirectory = $this->getContainer()->getParameter('dir_logs');
+        self::moveFile($output, $logsDirectory . 'source' . $srcId, $logsDirectory . 'source' . $dstId);
     }
 
     protected function moveFile($output, $sourceFile, $destinationFile) {

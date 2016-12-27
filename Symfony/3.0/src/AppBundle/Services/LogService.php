@@ -33,7 +33,7 @@ class LogService
         );
 
         if ($sourceId === null) {$logFile = 'edit-config-general-';}
-        else {$logFile = 'edit-source-' . $sourceId . '-';}
+        else {$logFile = '/source' . $sourceId . '/edit-source-';}
         
         file_put_contents($this->paramDirLog . $logFile . date("Y-m-d") . ".log", json_encode($logLine, JSON_FORCE_OBJECT) . "\r\n", FILE_APPEND | LOCK_EX);
     }

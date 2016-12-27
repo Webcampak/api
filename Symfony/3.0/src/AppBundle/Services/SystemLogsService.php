@@ -66,11 +66,11 @@ class SystemLogsService
                 $finder = new Finder();
                 $finder->files();
                 $finder->sort(function (\SplFileInfo $a, \SplFileInfo $b) { return strcmp($b->getRealpath(), $a->getRealpath()); });
-                $finder->files()->name('edit-source-' . $receivedSourceid . '-20*.log');
-                $finder->in($this->paramDirLogs);
+                $finder->files()->name('edit-source-20*.log');
+                $finder->in($this->paramDirLogs . 'source' . $receivedSourceid . '/');
                 foreach ($finder as $file) {
                     $this->logger->info('AppBundle\Services\SystemLogsService\getLogFile() - Looking at file: ' . $file->getFilename());
-                    $logFileContent = file($this->paramDirLogs . $file->getFilename());
+                    $logFileContent = file($this->paramDirLogs . 'source' . $receivedSourceid . '/' . $file->getFilename());
                     $logFileContent = array_reverse($logFileContent);
                     foreach($logFileContent as $f){
                         //{"DATE":"Sun, 14 Jun 15 14:41:32 +0000","USERNAME":"root","IP":"127.0.0.1","TYPE":"CONFIG","FILE":"\/home\/francois\/webcampak\/etc\/config-source1.cfg","PARAMETER":"cfgcroncapturevalue","OLD":"5","NEW":"6"}
