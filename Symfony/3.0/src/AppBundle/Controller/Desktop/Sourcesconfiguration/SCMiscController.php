@@ -33,6 +33,18 @@ class SCMiscController extends Controller {
         ));
     }
 
+    public function getAudioFilesAction($inputParams) {
+        $logger = $this->get('logger');
+        $logger->info('AppBundle\Controller\Desktop\SCMiscController.php\getAudioFilesAction() - Start');
+
+        $audiofiles = $this->get('app.svc.sources')->getAudioFiles($inputParams['SOURCEID']);
+
+        return new JsonResponse(array(
+            'results' => $audiofiles
+        , 'total' =>  count($audiofiles)
+        ));
+    }
+
     public function getFontsAction($inputParams) {
         $logger = $this->get('logger');
         $logger->info('AppBundle\Controller\Desktop\SCMiscController.php\getFontsAction() - Start');

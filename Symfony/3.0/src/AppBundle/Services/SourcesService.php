@@ -16,7 +16,7 @@ use AppBundle\Classes\BufferedOutput;
 
 class SourcesService
 {
-    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, $paramDirSources, $paramDirWatermark, $paramDirEtc) {
+    public function __construct(TokenStorage $tokenStorage, Doctrine $doctrine, Logger $logger, $paramDirSources, $paramDirWatermark, $paramDirAudio, $paramDirEtc) {
         $this->tokenStorage      = $tokenStorage;
         $this->em                   = $doctrine->getManager();
         $this->logger               = $logger;
@@ -24,6 +24,7 @@ class SourcesService
         $this->doctrine             = $doctrine;
         $this->paramDirSources      = $paramDirSources;
         $this->paramDirWatermark    = $paramDirWatermark;
+        $this->paramDirAudio        = $paramDirAudio;
         $this->paramDirEtc          = $paramDirEtc;
     }
 
@@ -134,6 +135,36 @@ class SourcesService
         }
     }
 
+    public function getAudioFiles($receivedSourceid) {
+        $this->logger->info('AppBundle\Services\SourcesService\getAudioFiles() - Start');
+
+        $audiofiles = array();
+        //First we look into source directory
+        if (is_dir($this->paramDirSources . "source" . $receivedSourceid . "/resources/audio/")) {
+            $audiodir = opendir($this->paramDirSources . "source" . $receivedSourceid . "/resources/audio/");
+            while ($listaudiofile = readdir($audiodir)) {
+                if(is_file($this->paramDirSources . "source" . $receivedSourceid . "/resources/audio/" . $listaudiofile) && (substr($listaudiofile, -4,4) == ".mp3" || substr($listaudiofile, -4,4) == ".m3u")) {
+                    $tmpaudiofiles = array();
+                    $tmpaudiofiles['NAME'] = $listaudiofile;
+                    array_push($audiofiles, $tmpaudiofiles);
+                }
+            }
+        }
+
+        //Then we look into global resources directory
+        if (is_dir($this->paramDirAudio)) {
+            $audiodir = opendir($this->paramDirAudio);
+            while ($listaudiofile = readdir($audiodir)) {
+                if(is_file($this->paramDirAudio . $listaudiofile) && (substr($listaudiofile, -4,4) == ".mp3" || substr($listaudiofile, -4,4) == ".m3u")) {
+                    $tmpaudiofiles = array();
+                    $tmpaudiofiles['NAME'] = $listaudiofile;
+                    array_push($audiofiles, $tmpaudiofiles);
+                }
+            }
+        }
+        return $audiofiles;
+    }
+
     public function getWatermarkFiles($receivedSourceid) {
         $this->logger->info('AppBundle\Services\SourcesService\getWatermarkFiles() - Start');
 
@@ -154,7 +185,7 @@ class SourcesService
         if (is_dir($this->paramDirWatermark)) {
             $watermarkdir = opendir($this->paramDirWatermark);
             while ($listwatermarkfile = readdir($watermarkdir)) {
-               if(is_file($this->paramDirWatermark.$listwatermarkfile) && (substr($listwatermarkfile, -4,4) == ".png" || substr($listwatermarkfile, -4,4) == ".jpg")) {
+               if(is_file($this->paramDirWatermark . $listwatermarkfile) && (substr($listwatermarkfile, -4,4) == ".png" || substr($listwatermarkfile, -4,4) == ".jpg")) {
                     $tmpwatermarkfiles = array();
                     $tmpwatermarkfiles['NAME'] = $listwatermarkfile;
                     array_push($watermarkfiles, $tmpwatermarkfiles);

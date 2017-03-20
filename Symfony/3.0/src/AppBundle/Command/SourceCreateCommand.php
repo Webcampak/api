@@ -284,6 +284,7 @@ class SourceCreateCommand extends ContainerAwareCommand
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/stats", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/audio", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/watermark", 0700);
+        $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/audio", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/alerts", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/alerts/incidents", 0700);
         $fs->mkdir($wpakSourcesDirectory . "source" . $sourceId . "/resources/reports", 0700);
