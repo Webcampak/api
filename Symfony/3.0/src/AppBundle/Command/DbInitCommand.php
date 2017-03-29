@@ -64,7 +64,7 @@ class DbInitCommand extends ContainerAwareCommand
             $token = new UsernamePasswordToken($searchRootUserEntity, null, "secured_area", $searchRootUserEntity->getRoles());            
             $this->getContainer()->get("security.token_storage")->setToken($token);
 
-        //SOURCE 1
+            //SOURCE 1
             self::createSources($output, 1, 'S1: Mon-Fri 09:00-18:00');
             $sourceCapture = array (
                 array ('NAME' => 'cfgsourceactive','VALUE' => 'yes','SOURCEID' => 1)
@@ -81,7 +81,6 @@ class DbInitCommand extends ContainerAwareCommand
                 , array ('NAME' => 'cfgcronday5','VALUE' => 'yes,09,00,18,00','SOURCEID' => 1)
                 , array ('NAME' => 'cfgcronday6','VALUE' => 'no,00,00,00,00','SOURCEID' => 1)
                 , array ('NAME' => 'cfgcronday7','VALUE' => 'no,00,00,00,00','SOURCEID' => 1)
-                , array ('NAME' => 'cfgemailalertreminder','VALUE' => '50','SOURCEID' => 1)
                 , array ('NAME' => 'cfgphidgeterroractivate','VALUE' => 'true','SOURCEID' => 1)
                 , array ('NAME' => 'cfgphidgetcameraport','VALUE' => '0','SOURCEID' => 1)
                 , array ('NAME' => 'cfgcopymainenable','VALUE' => 'yes','SOURCEID' => 1)
@@ -108,7 +107,7 @@ class DbInitCommand extends ContainerAwareCommand
                 self::log($output, 'info', 'Source Configuration: ' . $result['message']);                
             }            
         
-        //SOURCE 2
+            //SOURCE 2
             self::createSources($output, 2, 'S2: Mon-Fri 18:00-09:00 and Weekend');
             $sourceCapture = array (
                 array ('NAME' => 'cfgsourceactive','VALUE' => 'yes','SOURCEID' => 2)
@@ -125,7 +124,6 @@ class DbInitCommand extends ContainerAwareCommand
                 , array ('NAME' => 'cfgcronday5','VALUE' => 'yes,18,00,09,00','SOURCEID' => 2)
                 , array ('NAME' => 'cfgcronday6','VALUE' => 'yes,00,00,00,00','SOURCEID' => 2)
                 , array ('NAME' => 'cfgcronday7','VALUE' => 'yes,00,00,00,00','SOURCEID' => 2)
-                , array ('NAME' => 'cfgemailalertreminder','VALUE' => '50','SOURCEID' => 2)
                 , array ('NAME' => 'cfgphidgeterroractivate','VALUE' => 'true','SOURCEID' => 2)
                 , array ('NAME' => 'cfgphidgetcameraport','VALUE' => '0','SOURCEID' => 2)
                 , array ('NAME' => 'cfgcopymainenable','VALUE' => 'yes','SOURCEID' => 2)
@@ -161,7 +159,6 @@ class DbInitCommand extends ContainerAwareCommand
                 , array ('NAME' => 'cfgcroncapturevalue','VALUE' => '10','SOURCEID' => 10)
                 , array ('NAME' => 'cfgcroncaptureinterval','VALUE' => 'minutes','SOURCEID' => 10)
                 , array ('NAME' => 'cfgcroncalendar','VALUE' => 'no','SOURCEID' => 10)
-                , array ('NAME' => 'cfgemailalertreminder','VALUE' => '50','SOURCEID' => 10)
                 , array ('NAME' => 'cfghotlinksize2','VALUE' => '','SOURCEID' => 10)
                 , array ('NAME' => 'cfghotlinksize3','VALUE' => '','SOURCEID' => 10)
                 , array ('NAME' => 'cfgpicwatermarkactivate','VALUE' => 'no','SOURCEID' => 10)
