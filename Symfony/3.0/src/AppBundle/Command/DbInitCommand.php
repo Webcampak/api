@@ -347,6 +347,7 @@ class DbInitCommand extends ContainerAwareCommand
             $newUserEntity->setActiveFlag('Y');
             $newUserEntity->setFirstname('Root');
             $newUserEntity->setLastname('Root');
+            $newUserEntity->setEmail('freshinstall@webcampak.com');
             $newUserEntity->setGro($adminGroupEntity);
 
             $this->getContainer()->get('doctrine')->getManager()->persist($newUserEntity);
